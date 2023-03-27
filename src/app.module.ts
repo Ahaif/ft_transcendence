@@ -4,6 +4,7 @@ import { AppController} from './app.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
 
 
 // @Global() When you want to provide a set of providers which should be available everywhere out-of-the-box 
@@ -14,6 +15,7 @@ import { AppService } from './app.service';
     //   // database configuration
     // }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

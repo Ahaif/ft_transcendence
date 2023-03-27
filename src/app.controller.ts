@@ -10,22 +10,11 @@ export class AppController {
   // constructor(private readonly appService: AppService) {}
   constructor(private authService: AuthService) {}
 
-  // @Get()
-  // getHello(): string {
-  //   return "hello world";
-  // }
-
-  @UseGuards(LocalAuthGuard)
-  @Post('authen/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  @Get()
+  getHello(): string {
+    return "hello world";
   }
 
-
-//   @Get('ab*cd')
-//     findAll() {
-//   return 'This route uses a wildcard';
-// }
 
 }
 
