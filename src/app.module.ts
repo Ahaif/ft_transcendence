@@ -5,6 +5,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 
 // @Global() When you want to provide a set of providers which should be available everywhere out-of-the-box 
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     // }),
     AuthModule,
     UserModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

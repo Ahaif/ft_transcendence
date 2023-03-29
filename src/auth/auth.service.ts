@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { auth_dto } from './auth_DTO/auth_dto';
+import { auth_dto } from './dto/auth_dto';
+
+
+import { User } from '@prisma/client';
 
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
   private readonly auths: auth_dto[] = [];
-  
-  constructor(
-  
-    private jwtService: JwtService
-    ) {}
 
+
+  constructor(private prisma: PrismaService ){}
 
 
     signup(){
