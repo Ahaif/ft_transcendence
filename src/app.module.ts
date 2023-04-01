@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController} from './app.controller';
+import { ConfigModule } from '@nestjs/config';
 
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,16 +9,16 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 
+
 // @Global() When you want to provide a set of providers which should be available everywhere out-of-the-box 
 // (e.g., helpers, database connections, etc.), 
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({
-    //   // database configuration
-    // }),
+    ConfigModule.forRoot({}),
+    PrismaModule,
     AuthModule,
     UserModule,
-    PrismaModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],
