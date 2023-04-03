@@ -1,0 +1,36 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  .dashboard h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .dashboard p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard button {
+    padding: 1rem;
+    font-size: 1.2rem;
+    background-color: #2196f3;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .dashboard button:hover {
+    background-color: #0d8bf2;
+  }
+  
+  .dashboard button:active {
+    background-color: #0d73c9;
+  }

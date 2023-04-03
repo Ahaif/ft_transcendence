@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Login.css'
-
-import Dashboard from './Dashboard';
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // added state variable
   const navigate = useNavigate();
 
-  const handleSignup = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-        console.log('passed')
-      const response = await axios.post('localhost:3000/auth/signup', {
+      const response = await axios.post('http://localhost:3000/auth/Signup', {
         email,
         password,
       });
       localStorage.setItem('token', response.data.access_token);
-      navigate('dashboard');
+      navigate('/dashboard');
     } catch (error) {
       console.log(error);
+      setErrorMessage(error.response.data.message); // set error message from the response
     }
   };
 
@@ -38,7 +38,10 @@ const Login = () => {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         <br />
-        <button type="submit" onClick={handleSignup}>Login</button>
+        <button type="submit" onClick={handleLogin}>
+          Login
+        </button>
+        {errorMessage && <p className="error">{errorMessage}</p>} {/* render error message if it exists */}
       </form>
     </div>
   );
