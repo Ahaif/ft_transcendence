@@ -8,6 +8,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        
         <Route path="Login" element={<Login />} /> 
         <Route path="dashboard" element={<Dashboard />} />
         {/* Add more routes for your other pages */}

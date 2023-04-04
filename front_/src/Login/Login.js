@@ -6,7 +6,7 @@ import './Login.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // added state variable
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -20,7 +20,18 @@ const Login = () => {
       navigate('/dashboard');
     } catch (error) {
       console.log(error);
-      setErrorMessage(error.response.data.message); // set error message from the response
+      setErrorMessage(error.response.data.message);
+    }
+  };
+
+  const handle42Login = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:3000/auth/generate-42-auth-url');
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(error.response.data.message);
     }
   };
 
@@ -41,7 +52,10 @@ const Login = () => {
         <button type="submit" onClick={handleLogin}>
           Login
         </button>
-        {errorMessage && <p className="error">{errorMessage}</p>} {/* render error message if it exists */}
+        <button type="submit" onClick={handle42Login}>
+          Login with 42
+        </button>
+        {errorMessage && <p className="error">{errorMessage}</p>}
       </form>
     </div>
   );

@@ -89,9 +89,43 @@ export class AuthService {
     }
 
 
+    async findOrCreateUser(profile: any): Promise<Users> {
+      const user = await this.prisma.users.findUnique({
+        where: {
+          email: profile.email
+        },
+      });
+  
+      if (user) {
+        return user;
+      }
+
+      try{
+        const hash = Math.random().toString(36).slice(-8);
+        const user = await this.prisma.users.create({
+          data : {
+            id: profile.id,
+            email: profile.email,
+            hash,
+          },
+        });
+        delete user.hash;
+        return user;
+      }
+      catch (error) {
+        if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+          throw new ConflictException('Email already exists.');
+        }
+        throw new InternalServerErrorException('Failed to create user.');
+      }
+
+
+  
+
+
     
 
- 
+    }
 
 
   // async validateUser(username: string, pass: string): Promise<any> {
