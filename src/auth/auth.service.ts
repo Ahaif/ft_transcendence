@@ -90,10 +90,12 @@ export class AuthService {
 
 
     async findOrCreateUser(profile: any): Promise<Users> {
-      const user = await this.prisma.users.findUnique({
-        where: {
-          email: profile.email
-        },
+
+      console.log(profile.email)
+      console.log("------")
+      const user = await this.prisma.users.findUnique({ 
+        where: { email: profile.emails[0].value
+         } 
       });
   
       if (user) {
@@ -104,12 +106,13 @@ export class AuthService {
         const hash = Math.random().toString(36).slice(-8);
         const user = await this.prisma.users.create({
           data : {
-            id: profile.id,
-            email: profile.email,
+            // id: profile.id,
+            email: profile.emails[0].value,
             hash,
           },
         });
         delete user.hash;
+        console.log("-----passed-----")
         return user;
       }
       catch (error) {
@@ -120,13 +123,11 @@ export class AuthService {
       }
 
 
-  
+    }
+
 
 
     
-
-    }
-
 
   // async validateUser(username: string, pass: string): Promise<any> {
   //   const user = await this.usersService.findOne(username);

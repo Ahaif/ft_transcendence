@@ -12,7 +12,6 @@ export class UserController{
     @Get('me')
     getme(@Body() dto : auth_dto){
 
-        
         return dto.password
     }
 }
