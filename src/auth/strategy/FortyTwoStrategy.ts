@@ -7,16 +7,16 @@ import { AuthService } from '../auth.service';
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   constructor(private readonly authService: AuthService) {
     super({
-      clientID: 'u-s4t2ud-40f384fe51895192d4bcc2f8a4d4080b724c58eef637e8618a25e9f5dd8eb0f1',
-      clientSecret: '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',
+      clientID: 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f',
+      clientSecret: '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',
       callbackURL: 'http://localhost:3000/auth/dashboard',
     });
   }
 
   async validate(accessToken, refreshToken, profile, cb){
    
-    console.log('42 strategy invoked');
-    console.log(profile.username)
+    // console.log('42 strategy invoked');
+    // console.log(profile.username)
     const user = await this.authService.findOrCreateUser(profile);
     cb(null, user);
     

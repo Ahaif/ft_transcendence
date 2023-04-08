@@ -2,6 +2,8 @@ import {  ForbiddenException, Injectable } from '@nestjs/common';
 import { auth_dto } from './dto/auth_dto';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2'
+import axios from 'axios';
+
 
 //handling errors
 import { ConflictException, InternalServerErrorException } from '@nestjs/common';
@@ -91,8 +93,7 @@ export class AuthService {
 
     async findOrCreateUser(profile: any): Promise<Users> {
 
-      console.log(profile.email)
-      console.log("------")
+      
       const user = await this.prisma.users.findUnique({ 
         where: { email: profile.emails[0].value
          } 
@@ -112,7 +113,6 @@ export class AuthService {
           },
         });
         delete user.hash;
-        console.log("-----passed-----")
         return user;
       }
       catch (error) {
@@ -126,6 +126,32 @@ export class AuthService {
     }
 
 
+
+ 
+
+    async exchangeCodeForToken(code: any) {
+      const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
+      const clientSecret = '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';
+      const redirectUri = 'http://localhost:3000/auth/dashboard';
+      
+      try {
+        const response = await axios.post('https://api.intra.42.fr/oauth/token', {
+          grant_type: 'client_credentials',
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+        });
+    
+        return response.data.access_token;
+      } catch (error) {
+        if (error.response.data.error === 'invalid_grant') {
+          throw new Error('Incorrect authorization grant: The authorization grant could be invalid, expired, revoked, or may not match the redirection URI used in the authorization request.');
+        }
+        throw error;
+      }
+  }
+}
 
     
 
@@ -151,5 +177,3 @@ export class AuthService {
 
 
 
-
-}

@@ -9,40 +9,37 @@ import { auth_dto } from './dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('42')
-  @UseGuards(AuthGuard('42'))
-  async fortyTwoAuth(): Promise<void> {}
+  // @Get('42')
+  // @UseGuards(AuthGuard('42'))
+  // async fortyTwoAuth(): Promise<void> {}
 
   @Get('dashboard')
   @UseGuards(AuthGuard('42'))
-  async dashboard(@Param() params , @Res() res) {
-    const code  = params.id;
-    console.log(`Received authorization code: ${code}`);
-    return res.redirect(`http://localhost:3001/dashboard`);
+  async dashboard(@Req() req, @Res() res) {
+
+    const code = req.query.code;
+    try {
+      const accessToken = await this.authService.exchangeCodeForToken(code);
+
+    // Send the access token to the front-end
+      res.redirect(`http://localhost:3001/dashboard?access_token=${accessToken}`);
    
-    // res.redirect('http//localhost:3001/dashboard');
+    } catch (error) {
+    console.error('Error exchanging code for token:', error);
+    console.log(error)
+  }
     
   }
 
   @Get('generate-42-auth-url')
   async generate42AuthUrl(@Req() req): Promise<{ url: string }> {
     const redirectUri = 'http://localhost:3000/auth/dashboard';
-    const clientId = 'u-s4t2ud-40f384fe51895192d4bcc2f8a4d4080b724c58eef637e8618a25e9f5dd8eb0f1';
+    const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
     const scope = 'public';
     const state = '42oauth';
     const url = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
-    // const url = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-40f384fe51895192d4bcc2f8a4d4080b724c58eef637e8618a25e9f5dd8eb0f1&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fdashboard&response_type=code`
     return { url };
   }
-
-
-  // @Get('callback')
-  // async callback(@Req() req,) {
-  //   const { code } = req.query;
-
-  //   console.log(code);
-  // }
-
 
   @Post('signup')
   signup(@Body() dto: auth_dto) {
