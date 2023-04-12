@@ -7,6 +7,8 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('access_token_intra');
+
     navigate('/login');
   };
 
@@ -19,7 +21,7 @@ const Dashboard = () => {
         if (accessToken) {
           localStorage.setItem('access_token_intra', accessToken);
           // Remove the access token from the URL to prevent accidental sharing
-          window.history.replaceState({}, '', '/');
+          // window.history.replaceState({}, '', '/');
         }
       } catch (error) {
         console.log(error);

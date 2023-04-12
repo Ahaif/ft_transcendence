@@ -110,6 +110,8 @@ export class AuthService {
             // id: profile.id,
             email: profile.emails[0].value,
             hash,
+            // twoFactorSecret: false,
+            
           },
         });
         delete user.hash;
@@ -124,6 +126,17 @@ export class AuthService {
 
 
     }
+
+
+  async findByUsername(email: string): Promise<Users | null> {
+    const user = await this.prisma.users.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    delete user.hash
+    return user
+  }
 
 
 
@@ -142,6 +155,7 @@ export class AuthService {
           client_secret: clientSecret,
           redirect_uri: redirectUri,
         });
+
     
         return response.data.access_token;
       } catch (error) {

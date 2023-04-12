@@ -17,12 +17,14 @@ model Users {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email     String @unique
-  hash      String
+  email           String @unique
+  hash            String
+  twoFactorSecret Boolean? @default(false)
+  
 
   @@map("Users")
 
 }
 
-
+//
 
