@@ -1,0 +1,75 @@
+.enable-2fa-container {
+    max-width: 500px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .enable-2fa-container h1 {
+    font-size: 2em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+  }
+  
+  .enable-2fa-container p {
+    font-size: 1.2em;
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+  }
+  
+  .enable-2fa-container form {
+    display: inline-block;
+    text-align: left;
+  }
+  
+  .enable-2fa-container .form-group {
+    margin-bottom: 1em;
+  }
+  
+  .enable-2fa-container label {
+    font-size: 1.2em;
+    margin-right: 0.5em;
+  }
+  
+  .enable-2fa-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5em;
+  }
+  
+  .enable-2fa-container button[type="submit"] {
+    font-size: 1.2em;
+    padding: 0.5em 1em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0.3em;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .enable-2fa-container button[type="submit"]:hover {
+    background-color: #0062cc;
+  }
+  
+  .skip-2fa-container {
+    margin-top: 2em;
+  }
+  
+  .skip-2fa-container p {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+  }
+  
+  .skip-2fa-container a {
+    font-size: 1.2em;
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid #007bff;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .skip-2fa-container a:hover {
+    color: #0056b3;
+    border-bottom: 1px solid #0056b3;
+  }
+  

@@ -40,8 +40,9 @@ export class AuthController {
        if (user.twoFactorSecret) {
         // Redirect to the 2FA page if the user has enabled 2FA
         res.redirect(`http://localhost:3001/dashboard?access_token=${accessToken}`);
-      }else{
-        res.redirect('http://localhost:3000/auth/enable-2fa');
+      }
+      else{
+        res.redirect(`http://localhost:3001/enable-2fa`);
         // console.log("-------passed------")
       }
     } catch (error) {
@@ -63,15 +64,26 @@ export class AuthController {
 
 
     
-  // Route for displaying the enable 2FA page
+  // // Route for displaying the enable 2FA page
   @Get('enable-2fa')
-  async showEnable2FA(@Req() req) {
-    console.log("invoked");
-    
-    const user = req.username;
-    console.log(user);
-    
-
+  async showEnable2FA(@Req() req, @Res() res) {
+    try {
+      const secret = speakeasy.generateSecret({ length: 20 });
+  
+      // Generate a QR code for the user to scan with a 2FA app
+      const qrCodeUrl = await new Promise((resolve, reject) => {
+        qrcode.toDataURL(secret.otpauth_url, (err, url) => {
+          if (err) reject(err);
+          else resolve(url);
+        });
+      });
+  
+      // Set the QR code URL in the response
+      res.status(200).json({ qrCodeUrl });
+    } catch (error) {
+      console.error('Error generating 2FA:', error);
+      res.status(500).send('Error generating 2FA');
+    }
   }
 
       // const secret = speakeasy.generateSecret({ length: 20 });
