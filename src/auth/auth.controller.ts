@@ -4,10 +4,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { auth_dto } from './dto';
-import * as jwt from 'jsonwebtoken';
 
-import speakeasy from 'speakeasy';
+import { TOTP,  Secret } from 'otpauth'; // import the classes you need
 import * as qrcode from 'qrcode';
+
+import speakeasy from 'speakeasy'
+
+
 import { log } from 'console';
 
 
@@ -64,43 +67,32 @@ export class AuthController {
 
 
     
-  // // Route for displaying the enable 2FA page
-  @Get('enable-2fa')
-  async showEnable2FA(@Req() req, @Res() res) {
-    try {
-      const secret = speakeasy.generateSecret({ length: 20 });
-  
-      // Generate a QR code for the user to scan with a 2FA app
-      const qrCodeUrl = await new Promise((resolve, reject) => {
-        qrcode.toDataURL(secret.otpauth_url, (err, url) => {
-          if (err) reject(err);
-          else resolve(url);
-        });
-      });
-  
-      // Set the QR code URL in the response
-      res.status(200).json({ qrCodeUrl });
-    } catch (error) {
-      console.error('Error generating 2FA:', error);
-      res.status(500).send('Error generating 2FA');
-    }
+// Route for displaying the enable 2FA page
+
+@Get('enable-2fa')
+async showEnable2FA(@Req() req, @Res() res) {
+  try {
+    // Generate a secret key
+    const secret = new Secret({ size: 20 });
+
+    // Generate a QR code for the user to scan with a 2FA app
+    const appName = 'ft_transcendence';
+    const totpUri = new TOTP({
+      issuer: appName,
+      secret: secret.base32,
+      algorithm: 'SHA1',
+      digits: 6,
+      period: 30,
+    }).toString();
+    const qrCodeUrl = await qrcode.toDataURL(totpUri);
+
+    // Set the QR code URL in the response
+    res.status(200).json({ qrCodeUrl });
+  } catch (error) {
+    console.error('Error generating 2FA:', error);
+    res.status(500).send('Error generating 2FA');
   }
-
-      // const secret = speakeasy.generateSecret({ length: 20 });
-    // console.log(secret);
-    // return req;
-    // const otpauthUrl = speakeasy.otpauthURL({
-    //   secret: secret.base32,
-    //   label: `${user.email} (${user.username})`,
-    //   issuer: 'Your app name',
-    //   encoding: 'base32',
-    // });
-    // const qrCode = await qrcode.toDataURL(otpauthUrl);
-    // console.log(qrCode);
-    // res.render('enable-2fa', { qrCode, secret: secret.base32 });
-
-
-
+}   
   
 
   @Post('signup')
