@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import './Enable2FA.css';
 
@@ -12,13 +12,46 @@ function Enable2FA() {
     event.preventDefault();
   
     try {
-      const response = await axios.get('http://localhost:3000/auth/enable-2fa');
+      const jwtToken = localStorage.getItem('jwt_token');
+      if (!jwtToken) {
+        // Handle the case where the JWT token is not present
+        console.error('JWT token not found');
+        return;
+      }
+  
+      const response = await axios.post(
+        'http://localhost:3000/auth/enable-2fa',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      );
       setQRCodeUrl(response.data.qrCodeUrl);
     } catch (error) {
-      console.error('Error getting QR code URL:', error);
+      console.error('Error enabling 2FA:', error);
     }
   };
 
+  useEffect(() => {
+    // alert("rendred");
+    const getAccessToken = async () => {
+      try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const accessToken = searchParams.get('access_token');
+        if (accessToken) {
+          localStorage.setItem('jwt_token', accessToken);
+          // Remove the access token from the URL to prevent accidental sharing
+          // window.history.replaceState({}, '', '/');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAccessToken();
+  }, []);
 
   return (
     <div className="enable-2fa-container">

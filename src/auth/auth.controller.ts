@@ -4,6 +4,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { auth_dto } from './dto';
+import * as jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
+
+
 
 import { TOTP,  Secret } from 'otpauth'; // import the classes you need
 import * as qrcode from 'qrcode';
@@ -17,7 +21,9 @@ import { log } from 'console';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
+    ) {}
 
   @Get('42')
   @UseGuards(AuthGuard('42'))
@@ -32,20 +38,19 @@ export class AuthController {
 
     try {
 
-      // const acc = req.cookies['access_token'];
-      // console.log(acc)
-
       const userEmail = req.user.email
-      console.log(userEmail)
+      // console.log(userEmail)
       const accessToken = await this.authService.exchangeCodeForToken(code);
        const user = await this.authService.findByUsername(userEmail);
-       console.log(user);
+       const jwt_token = await this.authService.signToken(userEmail, accessToken);
+      //  console.log(jwt_token)
+
        if (user.twoFactorSecret) {
         // Redirect to the 2FA page if the user has enabled 2FA
-        res.redirect(`http://localhost:3001/dashboard?access_token=${accessToken}`);
+        res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
       }
       else{
-        res.redirect(`http://localhost:3001/enable-2fa`);
+        res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}`);
         // console.log("-------passed------")
       }
     } catch (error) {
@@ -69,9 +74,14 @@ export class AuthController {
     
 // Route for displaying the enable 2FA page
 
+
 @Get('enable-2fa')
+@UseGuards(AuthGuard('jwt'))
 async showEnable2FA(@Req() req, @Res() res) {
   try {
+
+    // console.log(req.email)
+
     // Generate a secret key
     const secret = new Secret({ size: 20 });
 
@@ -92,19 +102,18 @@ async showEnable2FA(@Req() req, @Res() res) {
     console.error('Error generating 2FA:', error);
     res.status(500).send('Error generating 2FA');
   }
-}   
-  
+}
 
-  @Post('signup')
-  signup(@Body() dto: auth_dto) {
-    console.log({
-      dto,
-    });
-    return this.authService.signup(dto);
-  }
+//   @Post('signup')
+//   signup(@Body() dto: auth_dto) {
+//     console.log({
+//       dto,
+//     });
+//     return this.authService.signup(dto);
+//   }
 
-  @Post('signin')
-  signin(@Body() dto: auth_dto) {
-    return this.authService.signin(dto);
-  }
+//   @Post('signin')
+//   signin(@Body() dto: auth_dto) {
+//     return this.authService.signin(dto);
+//   }
 }

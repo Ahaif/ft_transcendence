@@ -25,71 +25,67 @@ export class AuthService {
     ){}
 
 
-  async signup(dto : auth_dto){
-      // generate pw hash
-      const hash = await argon.hash(dto.password);
+  // async signup(dto : auth_dto){
+  //     // generate pw hash
+  //     const hash = await argon.hash(dto.password);
 
-      // save the new user in db 
-    try{
-      const user = await this.prisma.users.create({
-        data : {
-          email: dto.email,
-          hash,
-        },
-      });
-      delete user.hash;
-      return this.signToken(user.id, user.email);
-    }
-    catch (error) {
-      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        throw new ConflictException('Email already exists.');
-      }
-      throw new InternalServerErrorException('Failed to create user.');
-    }
-  }
-
-
-   async signin(dto : auth_dto){
-      //find the user by email
-      const user = await this.prisma.users.findUnique({
-        where: {
-          email: dto.email
-        },
-      });
-
-       //if user does not exist throw exceptiom 
-      if(!user) throw new ForbiddenException('Credentials inccorect');
-
-      //if pw incorrect throw exception
-      const pwMatches = await argon.verify(user.hash, dto.password)
-      if(!pwMatches) throw new ForbiddenException('Credentials inccorect');
-
-      // //send back 
-      // delete user.hash
-      return this.signToken(user.id, user.email);
-
-    }
+  //     // save the new user in db 
+  //   try{
+  //     const user = await this.prisma.users.create({
+  //       data : {
+  //         email: dto.email,
+  //         hash,
+  //       },
+  //     });
+  //     delete user.hash;
+  //     return this.signToken(user.id, user.email);
+  //   }
+  //   catch (error) {
+  //     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+  //       throw new ConflictException('Email already exists.');
+  //     }
+  //     throw new InternalServerErrorException('Failed to create user.');
+  //   }
+  // }
 
 
+  //  async signin(dto : auth_dto){
+  //     //find the user by email
+  //     const user = await this.prisma.users.findUnique({
+  //       where: {
+  //         email: dto.email
+  //       },
+  //     });
 
-   async signToken(userId: number, email: string): Promise<{access_token: string}>
-    {
+  //      //if user does not exist throw exceptiom 
+  //     if(!user) throw new ForbiddenException('Credentials inccorect');
+
+  //     //if pw incorrect throw exception
+  //     const pwMatches = await argon.verify(user.hash, dto.password)
+  //     if(!pwMatches) throw new ForbiddenException('Credentials inccorect');
+
+  //     // //send back 
+  //     // delete user.hash
+  //     return this.signToken(user.id, user.email);
+
+  //   }
+
+
+
+    async signToken(email: string, accessToken: string): Promise<string > {
       const payload = {
-        sub: userId,
-        email
-      }
-      const secret = this.config.get('JWT_SECRET')
-      const token =  await this.jwt.signAsync(payload, {
-        expiresIn: '15m',
-        secret: secret,
-      });
-
-      return{
-        access_token: token,
+        email,
+        accessToken,
       };
-
+    
+      const secret = this.config.get('JWT_SECRET');
+      const token = await this.jwt.signAsync(payload, {
+        expiresIn: '15m',
+        secret,
+      });
+    
+      return token
     }
-
 
     async findOrCreateUser(profile: any): Promise<Users> {
 
