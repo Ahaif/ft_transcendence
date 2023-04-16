@@ -77,7 +77,8 @@ export class AuthController {
 async showEnable2FA(@Req() req, @Res() res) {
   try {
 
-    console.log(req.user.email)
+    console.log(req.user.username)
+    console.log(req.user.twoFA)
 
     // Generate a secret key
     const secret = new Secret({ size: 20 });
