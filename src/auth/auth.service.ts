@@ -109,6 +109,8 @@ export class AuthService {
           }
         });
         delete user.hash;
+        delete user.access_token;
+        
         return user;
       } catch (error) {
         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
