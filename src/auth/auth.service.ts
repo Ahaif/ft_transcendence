@@ -74,8 +74,8 @@ export class AuthService {
 
     async signToken(email: string, accessToken: string): Promise<string > {
       const payload = {
-        email
-        // accessToken,
+        email,
+        accessToken,
       };
     
       const secret = this.config.get('JWT_SECRET');

@@ -20,6 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: any) {
     console.log("passed")
     console.log(payload.email);
+    console.log(payload.accessToken)
 
     const email = payload.email;
 

@@ -46,7 +46,7 @@ export class AuthController {
       console.log(accessToken);
       console.log("---------------")
        const user = await this.authService.findByUsername(userEmail);
-       const jwt_token = await this.authService.signToken(userEmail, code);
+       const jwt_token = await this.authService.signToken(userEmail, accessToken);
        console.log("----jwt_token-----")
        console.log(jwt_token)
        console.log("------------")
