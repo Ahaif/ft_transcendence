@@ -33,25 +33,25 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async dashboard(@Req() req, @Res() res) {
 
-    const code = req.query.code;
+    // const code = req.query.code;
     console.log("---code----")
-    console.log(code);
+    console.log(req.user);
 
     try {
 
-      const userEmail = req.user.email
-      console.log(userEmail)
-      const accessToken = await this.authService.exchangeCodeForToken(code);
-      console.log("--------------")
-      console.log(accessToken);
-      console.log("---------------")
-       const user = await this.authService.findByUsername(userEmail);
-       const jwt_token = await this.authService.signToken(userEmail, accessToken);
+      // const userEmail = req.user.email
+      // console.log(userEmail)
+      // const accessToken = await this.authService.exchangeCodeForToken(code);
+      // console.log("--------------")
+      // console.log(accessToken);
+      // console.log("---------------")
+      //  const user = await this.authService.findByUsername(req.user);
+       const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret);
        console.log("----jwt_token-----")
        console.log(jwt_token)
        console.log("------------")
 
-       if (user.twoFactorSecret) {
+       if (req.user.twoFactorSecret) {
         // Redirect to the 2FA page if the user has enabled 2FA
         res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
       }

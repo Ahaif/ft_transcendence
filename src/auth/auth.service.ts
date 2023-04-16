@@ -72,10 +72,10 @@ export class AuthService {
 
 
 
-    async signToken(email: string, accessToken: string): Promise<string > {
+    async signToken(username: string, twoFA_sec: boolean): Promise<string > {
       const payload = {
-        email,
-        accessToken,
+        username,
+        twoFA_sec
       };
     
       const secret = this.config.get('JWT_SECRET');
@@ -87,42 +87,36 @@ export class AuthService {
       return token
     }
 
-    async findOrCreateUser(profile: any): Promise<Users> {
-
-      
-      const user = await this.prisma.users.findUnique({ 
-        where: { email: profile.emails[0].value
-         } 
+    async findOrCreateUser(profile: any, access_token: string): Promise<Users> {
+      const user = await this.prisma.users.findUnique({
+        where: { email: profile.emails[0].value }
       });
-  
+    
       if (user) {
         return user;
       }
-
-      try{
+    
+      try {
         const hash = Math.random().toString(36).slice(-8);
+      
         const user = await this.prisma.users.create({
-          data : {
-            // id: profile.id,
+          data: {
             email: profile.emails[0].value,
             hash,
-            // twoFactorSecret: false,
-            
-          },
+            username: profile.username,
+            access_token,
+            twoFactorSecret: false
+          }
         });
         delete user.hash;
         return user;
-      }
-      catch (error) {
+      } catch (error) {
         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
           throw new ConflictException('Email already exists.');
         }
         throw new InternalServerErrorException('Failed to create user.');
       }
-
-
     }
-
 
   async findByUsername(email: string): Promise<Users | null> {
     const user = await this.prisma.users.findUnique({
