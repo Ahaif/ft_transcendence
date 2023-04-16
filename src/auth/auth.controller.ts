@@ -25,25 +25,31 @@ export class AuthController {
     private readonly jwtService: JwtService,
     ) {}
 
-  @Get('42')
-  @UseGuards(AuthGuard('42'))
-  async fortyTwoAuth(): Promise<void> {}
+  // @Get('42')
+  // @UseGuards(AuthGuard('42'))
+  // async fortyTwoAuth(): Promise<void> {}
 
   @Get('dashboard')
   @UseGuards(AuthGuard('42'))
   async dashboard(@Req() req, @Res() res) {
 
     const code = req.query.code;
+    console.log("---code----")
     console.log(code);
 
     try {
 
       const userEmail = req.user.email
-      // console.log(userEmail)
+      console.log(userEmail)
       const accessToken = await this.authService.exchangeCodeForToken(code);
+      console.log("--------------")
+      console.log(accessToken);
+      console.log("---------------")
        const user = await this.authService.findByUsername(userEmail);
-       const jwt_token = await this.authService.signToken(userEmail, accessToken);
-      //  console.log(jwt_token)
+       const jwt_token = await this.authService.signToken(userEmail, code);
+       console.log("----jwt_token-----")
+       console.log(jwt_token)
+       console.log("------------")
 
        if (user.twoFactorSecret) {
         // Redirect to the 2FA page if the user has enabled 2FA
@@ -80,7 +86,7 @@ export class AuthController {
 async showEnable2FA(@Req() req, @Res() res) {
   try {
 
-    // console.log(req.email)
+    console.log(req.user.email)
 
     // Generate a secret key
     const secret = new Secret({ size: 20 });

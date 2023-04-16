@@ -14,21 +14,21 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: false,
       secretOrKey: config.get('JWT_SECRET')
     });
-    // console.log("passed 1", {data: ExtractJwt.fromAuthHeaderAsBearerToken()} )
+    console.log("JwtStrategy constructor called.")
   }
 
   async validate(payload: any) {
     console.log("passed")
+    console.log(payload.email);
 
-    const email = payload.sub;
-    const accessToken = payload.accessToken;
+    const email = payload.email;
 
-    console.log(email);
+
+    // console.log(email);
 
 
     return { 
       email,
-      accessToken
     };
   }
 }

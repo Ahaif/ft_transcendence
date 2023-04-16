@@ -20,13 +20,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     console.log(profile.username)
     console.log(accessToken)
     const user = await this.authService.findOrCreateUser(profile);
-
-       // Set the access_token cookie
-      //  req.cookie('access_token', accessToken, {
-      //   httpOnly: true,
-      //   sameSite: true,
-      //   signed: true,
-      // });
   
     cb(null, user);
     

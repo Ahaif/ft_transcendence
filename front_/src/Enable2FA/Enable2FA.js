@@ -13,33 +13,36 @@ function Enable2FA() {
   
     try {
       const jwtToken = localStorage.getItem('jwt_token');
+      console.log(jwtToken);
       if (!jwtToken) {
         // Handle the case where the JWT token is not present
         console.error('JWT token not found');
         return;
       }
   
-      const response = await axios.post(
+      const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      };
+  
+      const response = await axios.get(
         'http://localhost:3000/auth/enable-2fa',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        }
+        config
       );
+  
       setQRCodeUrl(response.data.qrCodeUrl);
     } catch (error) {
       console.error('Error enabling 2FA:', error);
     }
   };
-
   useEffect(() => {
     // alert("rendred");
     const getAccessToken = async () => {
       try {
         const searchParams = new URLSearchParams(window.location.search);
         const accessToken = searchParams.get('access_token');
+      
         if (accessToken) {
           localStorage.setItem('jwt_token', accessToken);
           // Remove the access token from the URL to prevent accidental sharing
