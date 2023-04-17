@@ -43,6 +43,7 @@ export class AuthController {
       //  console.log("------------")
 
        if (req.user.twoFactorSecret) {
+        //redirect to password form for validation before redirecting to dashboard
         // Redirect to the 2FA page if the user has enabled 2FA
         res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
       }
