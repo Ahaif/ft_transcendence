@@ -3,6 +3,7 @@ import { auth_dto } from './dto/auth_dto';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2'
 import axios from 'axios';
+import { NotFoundException } from '@nestjs/common';
 
 
 //handling errors
@@ -157,8 +158,26 @@ export class AuthService {
         throw error;
       }
   }
-}
 
+  async addTwoFASecret(username: string, secret: string): Promise<void> {
+    try {
+      const updatedUser = await this.prisma.users.update({
+        where: { username },
+        data: { twofa_secret: secret, twoFactorSecret: true },
+      });
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to add 2FA secret');
+    }
+  }
+  
+
+
+
+
+}
     
 
   // async validateUser(username: string, pass: string): Promise<any> {

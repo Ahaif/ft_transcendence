@@ -55,7 +55,6 @@ function Enable2FA() {
 
     getAccessToken();
   }, []);
-
   return (
     <div className="enable-2fa-container">
       <h1>Enable Two-Factor Authentication</h1>
@@ -65,12 +64,16 @@ function Enable2FA() {
           <label htmlFor="enable-2fa">Enable 2FA</label>
           <input type="checkbox" id="enable-2fa" name="enable-2fa" />
         </div>
-        <button type="submit">Submit</button>
       </form>
       <div className="qr-code-container">
         {qrCodeUrl && <img src={qrCodeUrl} alt="QR code" />}
       </div>
-      <div className="skip-2fa-container">
+      <div className="form-group">
+          <label htmlFor="authenticator-password">Google Authenticator Password</label>
+          <input type="password" id="authenticator-password" name="authenticator-password" required />
+        </div>
+        <button type="submit">Submit</button>
+        <div className="skip-2fa-container">
         <p>Or, if you want to skip this step for now, you can continue to your dashboard:</p>
         <a href="/dashboard">Go to Dashboard</a>
       </div>

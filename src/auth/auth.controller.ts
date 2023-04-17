@@ -94,6 +94,9 @@ async showEnable2FA(@Req() req, @Res() res) {
     }).toString();
     const qrCodeUrl = await qrcode.toDataURL(totpUri);
 
+
+     const updatedUser = await this.authService.addTwoFASecret(req.user.username, secret.base32);
+
     // Set the QR code URL in the response
     res.status(200).json({ qrCodeUrl });
   } catch (error) {
@@ -102,16 +105,16 @@ async showEnable2FA(@Req() req, @Res() res) {
   }
 }
 
-//   @Post('signup')
-//   signup(@Body() dto: auth_dto) {
-//     console.log({
-//       dto,
-//     });
-//     return this.authService.signup(dto);
-//   }
 
-//   @Post('signin')
-//   signin(@Body() dto: auth_dto) {
-//     return this.authService.signin(dto);
-//   }
+  @Post('check-2fa')
+  @UseGuards(AuthGuard('jwt'))
+  check_two_fa(@Req() req, @Res() res) {
+
+
+    console.log(req.user.username)
+    console.log(req.user.twoFA)
+    console.log(req.user)
+   
+    
+  }
 }
