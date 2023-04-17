@@ -2,6 +2,7 @@ import React, { useState , useEffect} from 'react';
 import axios from 'axios';
 import './Enable2FA.css';
 
+
 function Enable2FA() {
   const [qrCodeUrl, setQRCodeUrl] = useState('');
   const [showPasswordInput, setShowPasswordInput] = useState(false);
@@ -35,6 +36,7 @@ function Enable2FA() {
   
         if (response.data.success) {
           // Handle successful validation
+          window.location.href = '/dashboard';
           console.log('2FA enabled successfully');
         } else {
           // Handle failed validation
@@ -63,7 +65,10 @@ function Enable2FA() {
         if (accessToken) {
           localStorage.setItem('jwt_token', accessToken);
           // Remove the access token from the URL to prevent accidental sharing
-          window.history.replaceState({}, '', '/');
+          // window.history.replaceState({}, '', '/');
+              
+    
+                
         }
       } catch (error) {
         console.log(error);

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ParseIntPipe, Get, Req,Res, Query, Param} from '@nestjs/common';
+import { Controller, Post, Body, Redirect, Get, Req,Res, Query, Param} from '@nestjs/common';
 import { Response} from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
@@ -128,9 +128,11 @@ async check_two_fa(@Req() req, @Res() res, @Body() body) {
   if (isValid) {
     const update_user = await this.authService.enableTwoFASecret(req.user.username);
    
-    console.log("TOTP VALIDATED")
+    console.log("TOTP VALIDATED");
     // the user entered a valid TOTP code, do something
-    res.redirect(`http://localhost:3001/dashboard`);
+    // const token = req.headers.authorization.split(' ')[1]; // Get JWT token from header
+    // res.redirect(`http://localhost:3001/dashboard?access_token=${token}`); 
+    res.status(200).json({ success: true }); 
   } else {
     // the user entered an invalid TOTP code, do something else
     res.status(401).json({ message: 'Invalid TOTP code' });
