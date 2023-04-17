@@ -109,14 +109,16 @@ async showEnable2FA(@Req() req, @Res() res) {
 
 @Post('check-2fa')
 @UseGuards(AuthGuard('jwt'))
-async check_two_fa(@Req() req, @Res() res) {
+async check_two_fa(@Req() req, @Res() res, @Body() body) {
 
   console.log(req.user.username)
   const user_data = await this.authService.findByUsername(req.user.username)
   console.log(user_data.twofa_secret);
 
   const secretFromDB = user_data.twofa_secret;
-  const userEnteredCode = "576713"
+  const userEnteredCode = body.password;
+
+  console.log(body.password)
 
   const isValid = authenticator.verify({
     secret: secretFromDB,
@@ -126,9 +128,9 @@ async check_two_fa(@Req() req, @Res() res) {
   if (isValid) {
     const update_user = await this.authService.enableTwoFASecret(req.user.username);
    
-    
+    console.log("TOTP VALIDATED")
     // the user entered a valid TOTP code, do something
-    res.status(200).json({ message: 'Valid TOTP code' });
+    res.redirect(`http://localhost:3001/dashboard`);
   } else {
     // the user entered an invalid TOTP code, do something else
     res.status(401).json({ message: 'Invalid TOTP code' });

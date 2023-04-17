@@ -8,7 +8,7 @@ function Enable2FA() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     try {
       const jwtToken = localStorage.getItem('jwt_token');
       console.log(jwtToken);
@@ -17,20 +17,38 @@ function Enable2FA() {
         console.error('JWT token not found');
         return;
       }
-
+  
       const config = {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       };
-
-      const response = await axios.get(
-        'http://localhost:3000/auth/enable-2fa',
-        config
-      );
-
-      setQRCodeUrl(response.data.qrCodeUrl);
-      setShowPasswordInput(true);
+  
+      if (showPasswordInput) {
+        const password = event.target['authenticator-password'].value;
+  
+        const response = await axios.post(
+          'http://localhost:3000/auth/check-2fa',
+          { password },
+          config
+        );
+  
+        if (response.data.success) {
+          // Handle successful validation
+          console.log('2FA enabled successfully');
+        } else {
+          // Handle failed validation
+          console.log('2FA validation failed');
+        }
+      } else {
+        const response = await axios.get(
+          'http://localhost:3000/auth/enable-2fa',
+          config
+        );
+  
+        setQRCodeUrl(response.data.qrCodeUrl);
+        setShowPasswordInput(true);
+      }
     } catch (error) {
       console.error('Error enabling 2FA:', error);
     }
