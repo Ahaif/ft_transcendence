@@ -121,10 +121,10 @@ export class AuthService {
       }
     }
 
-  async findByUsername(email: string): Promise<Users | null> {
+  async findByUsername(username: string): Promise<Users | null> {
     const user = await this.prisma.users.findUnique({
       where: {
-        email: email,
+        username: username,
       },
     });
     delete user.hash
@@ -163,7 +163,7 @@ export class AuthService {
     try {
       const updatedUser = await this.prisma.users.update({
         where: { username },
-        data: { twofa_secret: secret, twoFactorSecret: true },
+        data: { twofa_secret: secret },
       });
       if (!updatedUser) {
         throw new NotFoundException('User not found');
@@ -174,6 +174,19 @@ export class AuthService {
   }
   
 
+  async enableTwoFASecret(username: string): Promise<void> {
+    try {
+      const updatedUser = await this.prisma.users.update({
+        where: { username },
+        data: { twoFactorSecret: true },
+      });
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to add 2FA secret');
+    }
+  }
 
 
 

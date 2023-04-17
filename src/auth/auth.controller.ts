@@ -7,9 +7,9 @@ import { auth_dto } from './dto';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 
+import { authenticator } from 'otplib';
 
-
-import { TOTP,  Secret } from 'otpauth'; // import the classes you need
+import { TOTP,  Secret} from 'otpauth'; // import the classes you need
 import * as qrcode from 'qrcode';
 
 import speakeasy from 'speakeasy'
@@ -106,15 +106,32 @@ async showEnable2FA(@Req() req, @Res() res) {
 }
 
 
-  @Post('check-2fa')
-  @UseGuards(AuthGuard('jwt'))
-  check_two_fa(@Req() req, @Res() res) {
 
+@Post('check-2fa')
+@UseGuards(AuthGuard('jwt'))
+async check_two_fa(@Req() req, @Res() res) {
 
-    console.log(req.user.username)
-    console.log(req.user.twoFA)
-    console.log(req.user)
+  console.log(req.user.username)
+  const user_data = await this.authService.findByUsername(req.user.username)
+  console.log(user_data.twofa_secret);
+
+  const secretFromDB = user_data.twofa_secret;
+  const userEnteredCode = "576713"
+
+  const isValid = authenticator.verify({
+    secret: secretFromDB,
+    token: userEnteredCode
+  });
+
+  if (isValid) {
+    const update_user = await this.authService.enableTwoFASecret(req.user.username);
    
     
+    // the user entered a valid TOTP code, do something
+    res.status(200).json({ message: 'Valid TOTP code' });
+  } else {
+    // the user entered an invalid TOTP code, do something else
+    res.status(401).json({ message: 'Invalid TOTP code' });
   }
+}
 }
