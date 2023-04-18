@@ -1,75 +1,81 @@
 .enable-2fa-container {
-    max-width: 500px;
-    margin: auto;
-    text-align: center;
-  }
-  
-  .enable-2fa-container h1 {
-    font-size: 2em;
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-  }
-  
-  .enable-2fa-container p {
-    font-size: 1.2em;
-    margin-top: 0.5em;
-    margin-bottom: 2em;
-  }
-  
-  .enable-2fa-container form {
-    display: inline-block;
-    text-align: left;
-  }
-  
-  .enable-2fa-container .form-group {
-    margin-bottom: 1em;
-  }
-  
-  .enable-2fa-container label {
-    font-size: 1.2em;
-    margin-right: 0.5em;
-  }
-  
-  .enable-2fa-container input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 0.5em;
-  }
-  
-  .enable-2fa-container button[type="submit"] {
-    font-size: 1.2em;
-    padding: 0.5em 1em;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 0.3em;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .enable-2fa-container button[type="submit"]:hover {
-    background-color: #0062cc;
-  }
-  
-  .skip-2fa-container {
-    margin-top: 2em;
-  }
-  
-  .skip-2fa-container p {
-    font-size: 1.2em;
-    margin-bottom: 1em;
-  }
-  
-  .skip-2fa-container a {
-    font-size: 1.2em;
-    color: #007bff;
-    text-decoration: none;
-    border-bottom: 1px solid #007bff;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .skip-2fa-container a:hover {
-    color: #0056b3;
-    border-bottom: 1px solid #0056b3;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f2f2f2;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.enable-2fa-container h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.enable-2fa-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.qr-code-container {
+  margin-bottom: 2rem;
+}
+
+.qr-code-container img {
+  max-width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.form-group input[type="password"] {
+  padding: 0.5rem;
+  font-size: 1.2rem;
+}
+
+button[type="submit"] {
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+
+.skip-2fa-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.skip-2fa-container p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skip-2fa-container a {
+  font-size: 1.2rem;
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.skip-2fa-container a:hover {
+  text-decoration: underline;
+}

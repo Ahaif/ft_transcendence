@@ -9,11 +9,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        
-        <Route path="Login" element={<Login />} /> 
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="enable-2fa" element={<Enable2FA />} />
-        
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/enable-2fa" element={<Enable2FA />} />
         {/* Add more routes for your other pages */}
       </Routes>
     </Router>

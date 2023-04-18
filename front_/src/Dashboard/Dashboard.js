@@ -9,24 +9,25 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
-    localStorage.removeItem('access_token_intra');
-    navigate('/login');
+    localStorage.removeItem('jwt_token');
+    navigate('/');
   };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('access_token');
     if (token) {
-      localStorage.setItem('access_token', token);
+      localStorage.setItem('jwt_token', token);
+      window.history.replaceState({}, '', '/');
       setShowPasswordForm(true); // show password form if 2FA is enabled
     }
   }, []);
 
   const handlePasswordSubmit = async (event) => {
-    event.preventDefault(); // prevent default form submission behavior
-    const password = event.target.password.value; // get the password from the form input
+    event.preventDefault(); 
+    const password = event.target.password.value; 
     // TODO: validate the password and send it to the server for verification
-    const jwtToken = localStorage.getItem('access_token');
+    const jwtToken = localStorage.getItem('jwt_token');
     console.log(jwtToken);
     if (!jwtToken) {
       console.error('JWT token not found');
@@ -49,13 +50,11 @@ const Dashboard = () => {
       if (response.data.success) {
         // Handle successful validation
         window.location.href = '/dashboard';
-        console.log('2FA enabled successfully');
-      } else {
-        // Handle failed validation
-        console.log('2FA validation failed');
       }
     } catch (error) {
-      console.error('Error validating password:', error);
+
+      alert('Incorrect password entered. this incident will be reported.');
+      window.location.href = '/login'
     }
   
     setShowPasswordForm(false); // hide password form after submission
@@ -69,7 +68,7 @@ const Dashboard = () => {
       {showPasswordForm ? (
         <form onSubmit={handlePasswordSubmit}>
           <label>
-            Password:
+             Google auth Password:
             <input type="password" name="password" />
           </label>
           <button type="submit">Submit</button>

@@ -33,23 +33,18 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async dashboard(@Req() req, @Res() res) {
 
-    console.log("---req user----")
-    console.log(req.user);
+    // console.log("---req user----")
+    // console.log(req.user);
 
     try {
        const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret);
-      //  console.log("----jwt_token-----")
-      //  console.log(jwt_token)
-      //  console.log("------------")
-
+  
        if (req.user.twoFactorSecret) {
         //redirect to password form for validation before redirecting to dashboard
-        // Redirect to the 2FA page if the user has enabled 2FA
         res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
       }
       else{
         res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}`);
-        // console.log("-------passed------")
       }
     } catch (error) {
     console.error('Error exchanging code for token:', error);
@@ -69,17 +64,12 @@ export class AuthController {
   }
 
 
-    
-// Route for displaying the enable 2FA page
 
 
 @Get('enable-2fa')
 @UseGuards(AuthGuard('jwt'))
 async showEnable2FA(@Req() req, @Res() res) {
   try {
-
-    console.log(req.user.username)
-    console.log(req.user.twoFA)
 
     // Generate a secret key
     const secret = new Secret({ size: 20 });
@@ -95,10 +85,9 @@ async showEnable2FA(@Req() req, @Res() res) {
     }).toString();
     const qrCodeUrl = await qrcode.toDataURL(totpUri);
 
+    //update user secret
+     await this.authService.addTwoFASecret(req.user.username, secret.base32);
 
-     const updatedUser = await this.authService.addTwoFASecret(req.user.username, secret.base32);
-
-    // Set the QR code URL in the response
     res.status(200).json({ qrCodeUrl });
   } catch (error) {
     console.error('Error generating 2FA:', error);
@@ -112,14 +101,10 @@ async showEnable2FA(@Req() req, @Res() res) {
 @UseGuards(AuthGuard('jwt'))
 async check_two_fa(@Req() req, @Res() res, @Body() body) {
 
-  console.log(req.user.username)
   const user_data = await this.authService.findByUsername(req.user.username)
-  console.log(user_data.twofa_secret);
 
   const secretFromDB = user_data.twofa_secret;
   const userEnteredCode = body.password;
-
-  console.log(body.password)
 
   const isValid = authenticator.verify({
     secret: secretFromDB,
@@ -127,16 +112,14 @@ async check_two_fa(@Req() req, @Res() res, @Body() body) {
   });
 
   if (isValid) {
-    const update_user = await this.authService.enableTwoFASecret(req.user.username);
+
+    await this.authService.enableTwoFASecret(req.user.username);
    
     console.log("TOTP VALIDATED");
-    // the user entered a valid TOTP code, do something
-    // const token = req.headers.authorization.split(' ')[1]; // Get JWT token from header
-    // res.redirect(`http://localhost:3001/dashboard?access_token=${token}`); 
     res.status(200).json({ success: true }); 
   } else {
     // the user entered an invalid TOTP code, do something else
-    res.status(401).json({ message: 'Invalid TOTP code' });
+    res.status(401).json({ success: false, message: 'Invalid TOTP code' });
   }
 }
 }

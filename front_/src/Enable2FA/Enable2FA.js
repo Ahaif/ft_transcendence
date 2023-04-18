@@ -37,11 +37,7 @@ function Enable2FA() {
         if (response.data.success) {
           // Handle successful validation
           window.location.href = '/dashboard';
-          console.log('2FA enabled successfully');
-        } else {
-          // Handle failed validation
-          console.log('2FA validation failed');
-        }
+        } 
       } else {
         const response = await axios.get(
           'http://localhost:3000/auth/enable-2fa',
@@ -52,7 +48,9 @@ function Enable2FA() {
         setShowPasswordInput(true);
       }
     } catch (error) {
-      console.error('Error enabling 2FA:', error);
+      console.log('Error validating password: ', error.response.data.message);
+      alert('Incorrect password entered. this incident will be reported.');
+      window.location.href = '/login'
     }
   };
 
@@ -65,10 +63,8 @@ function Enable2FA() {
         if (accessToken) {
           localStorage.setItem('jwt_token', accessToken);
           // Remove the access token from the URL to prevent accidental sharing
-          // window.history.replaceState({}, '', '/');
+          window.history.replaceState({}, '', '/');
               
-    
-                
         }
       } catch (error) {
         console.log(error);
