@@ -1,5 +1,5 @@
 import {  ForbiddenException, Injectable } from '@nestjs/common';
-import { auth_dto } from './dto/auth_dto';
+
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2'
 import axios from 'axios';
@@ -17,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private readonly auths: auth_dto[] = [];
+
 
   constructor(
     private prisma: PrismaService, 
@@ -73,10 +73,12 @@ export class AuthService {
 
 
 
-    async signToken(username: string, twoFA_sec: boolean): Promise<string > {
+    async signToken(username: string, twoFA_sec: boolean, displayName: string): Promise<string > {
       const payload = {
         username,
-        twoFA_sec
+        twoFA_sec,
+        displayName
+       
       };
     
       const secret = this.config.get('JWT_SECRET');
@@ -99,8 +101,8 @@ export class AuthService {
     
       try {
         const hash = Math.random().toString(36).slice(-8);
-      
-        const user = await this.prisma.users.create({
+    
+        const newUser = await this.prisma.users.create({
           data: {
             email: profile.emails[0].value,
             hash,
@@ -109,10 +111,9 @@ export class AuthService {
             twoFactorSecret: false
           }
         });
-        delete user.hash;
-        delete user.access_token;
-        
-        return user;
+    
+      
+        return newUser;
       } catch (error) {
         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
           throw new ConflictException('Email already exists.');
@@ -120,7 +121,6 @@ export class AuthService {
         throw new InternalServerErrorException('Failed to create user.');
       }
     }
-
   async findByUsername(username: string): Promise<Users | null> {
     const user = await this.prisma.users.findUnique({
       where: {

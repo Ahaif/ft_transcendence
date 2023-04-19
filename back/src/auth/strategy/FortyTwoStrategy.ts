@@ -17,8 +17,20 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
    
   
     const user = await this.authService.findOrCreateUser(profile, accessToken);
-  
-    cb(null, user);
+
+    const neWuser = {
+      ...user,
+      displayName: profile.displayName,
+      hash: undefined,
+      access_token: undefined,
+      twofa_secret: undefined,
+    };
+    
+    // console.log(profile.displayName);
+    // console.log(profile.photos);
+    
+    console.log(neWuser);
+    cb(null, neWuser);
     
   }
 

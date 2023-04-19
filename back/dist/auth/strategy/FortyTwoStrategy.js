@@ -25,7 +25,9 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
     }
     async validate(accessToken, refreshToken, profile, cb) {
         const user = await this.authService.findOrCreateUser(profile, accessToken);
-        cb(null, user);
+        const neWuser = Object.assign(Object.assign({}, user), { displayName: profile.displayName, hash: undefined, access_token: undefined, twofa_secret: undefined });
+        console.log(neWuser);
+        cb(null, neWuser);
     }
 };
 FortyTwoStrategy = __decorate([

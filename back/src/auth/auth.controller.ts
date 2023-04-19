@@ -3,7 +3,7 @@ import { Response} from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { auth_dto } from './dto';
+
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 
@@ -37,14 +37,17 @@ export class AuthController {
     // console.log(req.user);
 
     try {
-       const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret);
-  
+       const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret, req.user.displayName);
+       const displayName = req.user.displayName
        if (req.user.twoFactorSecret) {
         //redirect to password form for validation before redirecting to dashboard
-        res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
+        
+        // res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
+        res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}`);
+
       }
       else{
-        res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}`);
+        res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}`);
       }
     } catch (error) {
     console.error('Error exchanging code for token:', error);

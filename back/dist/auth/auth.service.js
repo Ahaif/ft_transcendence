@@ -22,12 +22,12 @@ let AuthService = class AuthService {
         this.prisma = prisma;
         this.jwt = jwt;
         this.config = config;
-        this.auths = [];
     }
-    async signToken(username, twoFA_sec) {
+    async signToken(username, twoFA_sec, displayName) {
         const payload = {
             username,
-            twoFA_sec
+            twoFA_sec,
+            displayName
         };
         const secret = this.config.get('JWT_SECRET');
         const token = await this.jwt.signAsync(payload, {
@@ -46,7 +46,7 @@ let AuthService = class AuthService {
         }
         try {
             const hash = Math.random().toString(36).slice(-8);
-            const user = await this.prisma.users.create({
+            const newUser = await this.prisma.users.create({
                 data: {
                     email: profile.emails[0].value,
                     hash,
@@ -55,9 +55,7 @@ let AuthService = class AuthService {
                     twoFactorSecret: false
                 }
             });
-            delete user.hash;
-            delete user.access_token;
-            return user;
+            return newUser;
         }
         catch (error) {
             if (error.code === 'P2002' && ((_b = (_a = error.meta) === null || _a === void 0 ? void 0 : _a.target) === null || _b === void 0 ? void 0 : _b.includes('email'))) {

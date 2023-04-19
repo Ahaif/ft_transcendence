@@ -6,9 +6,8 @@ export declare class AuthService {
     private prisma;
     private jwt;
     private config;
-    private readonly auths;
     constructor(prisma: PrismaService, jwt: JwtService, config: ConfigService);
-    signToken(username: string, twoFA_sec: boolean): Promise<string>;
+    signToken(username: string, twoFA_sec: boolean, displayName: string): Promise<string>;
     findOrCreateUser(profile: any, access_token: string): Promise<Users>;
     findByUsername(username: string): Promise<Users | null>;
     exchangeCodeForToken(code: any): Promise<any>;

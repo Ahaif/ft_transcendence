@@ -28,12 +28,13 @@ let AuthController = class AuthController {
     }
     async dashboard(req, res) {
         try {
-            const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret);
+            const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret, req.user.displayName);
+            const displayName = req.user.displayName;
             if (req.user.twoFactorSecret) {
-                res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
+                res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}`);
             }
             else {
-                res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}`);
+                res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}`);
             }
         }
         catch (error) {
