@@ -12,7 +12,6 @@ const app_controller_1 = require("./app.controller");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./auth/auth.module");
 const app_service_1 = require("./app.service");
-const user_module_1 = require("./user/user.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 let AppModule = class AppModule {
 };
@@ -22,7 +21,6 @@ AppModule = __decorate([
             config_1.ConfigModule.forRoot({}),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
-            user_module_1.UserModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

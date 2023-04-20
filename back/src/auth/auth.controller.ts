@@ -42,12 +42,12 @@ export class AuthController {
        if (req.user.twoFactorSecret) {
         //redirect to password form for validation before redirecting to dashboard
         
-        // res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}`);
-        res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}`);
+        // res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}`);
+        res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}`);
 
       }
       else{
-        res.redirect(`http://localhost:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}`);
+        res.redirect(`http://10.11.1.1:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}`);
       }
     } catch (error) {
     console.error('Error exchanging code for token:', error);
@@ -58,7 +58,7 @@ export class AuthController {
 
   @Get('generate-42-auth-url')
   async generate42AuthUrl(@Req() req): Promise<{ url: string }> {
-    const redirectUri = 'http://localhost:3000/auth/dashboard';
+    const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
     const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
     const scope = 'public';
     const state = '42oauth';

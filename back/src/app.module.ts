@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
+// import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 
@@ -17,7 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ConfigModule.forRoot({}),
     PrismaModule,
     AuthModule,
-    UserModule,
+    // UserModule,
     
   ],
   controllers: [AppController],

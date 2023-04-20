@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
-import { JwtStrategy } from 'src/auth/strategy';
-import { UserController } from './user.controller';
+// import { Module } from '@nestjs/common';
+// import { JwtStrategy } from 'src/auth/strategy';
+// import { UserController } from './user.controller';
 
-@Module({
+// @Module({
 
-    controllers: [UserController],
-     providers: [UserController,],
-})
-export class UserModule {}
+//     controllers: [UserController],
+//      providers: [UserController,],
+// })
+// export class UserModule {}
