@@ -29,7 +29,7 @@ function Enable2FA() {
         const password = event.target['authenticator-password'].value;
   
         const response = await axios.post(
-          'http://localhost:3000/auth/check-2fa',
+          'http://10.11.1.1:3000/auth/check-2fa',
           { password },
           config
         );
@@ -44,7 +44,7 @@ function Enable2FA() {
         }
       } else {
         const response = await axios.get(
-          'http://localhost:3000/auth/enable-2fa',
+          'http://10.11.1.1:3000/auth/enable-2fa',
           config
         );
   

@@ -7,6 +7,7 @@ CREATE TABLE "Users" (
     "access_token" TEXT NOT NULL,
     "twoFactorSecret" BOOLEAN DEFAULT false,
     "twofa_secret" TEXT DEFAULT '',
+    "avatar" TEXT DEFAULT '',
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );

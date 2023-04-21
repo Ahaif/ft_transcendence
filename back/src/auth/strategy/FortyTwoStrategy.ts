@@ -13,7 +13,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     });
   }
 
-  async validate(accessToken, refreshToken, profile, cb){
+  async validate(accessToken:string, refreshToken:string, profile: any, cb){
+  
    
   
     const user = await this.authService.findOrCreateUser(profile, accessToken);
@@ -29,7 +30,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // console.log(profile.displayName);
     // console.log(profile.photos);
     
-    console.log(neWuser);
+    console.log(profile._json.image.link);
     cb(null, neWuser);
     
   }

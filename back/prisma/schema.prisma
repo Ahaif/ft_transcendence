@@ -18,6 +18,7 @@ model Users {
   access_token    String  @unique
   twoFactorSecret Boolean? @default(false)
   twofa_secret    String? @default("")
+  avatar          String? @default("")
 
   @@map("Users")
 }

@@ -42,7 +42,7 @@ const Dashboard = () => {
   
     try {
       const response = await axios.post(
-        'http://localhost:3000/auth/check-2fa',
+        'http://10.11.1.1:3000/auth/check-2fa',
         { password },
         config
       );

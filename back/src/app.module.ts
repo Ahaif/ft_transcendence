@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController} from './app.controller';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
-// import { UserModule } from './user/user.module';
+
 import { PrismaModule } from './prisma/prisma.module';
+import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
+import { AuthController } from './auth/auth.controller';
 
 
 
@@ -15,12 +19,13 @@ import { PrismaModule } from './prisma/prisma.module';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
+    JwtModule.register({}),
     PrismaModule,
     AuthModule,
-    // UserModule,
+    UserModule,
     
   ],
-  controllers: [AppController],
+  controllers: [AppController, UserController, AuthController],
   providers: [AppService],
   // exports: [CatsService] to export any service to be use by all the modules declared 
 })

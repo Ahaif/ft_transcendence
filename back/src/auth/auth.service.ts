@@ -108,7 +108,8 @@ export class AuthService {
             hash,
             username: profile.username,
             access_token,
-            twoFactorSecret: false
+            twoFactorSecret: false,
+            avatar : profile._json.image.link
           }
         });
     

@@ -1,10 +1,17 @@
-// import { Module } from '@nestjs/common';
-// import { JwtStrategy } from 'src/auth/strategy';
-// import { UserController } from './user.controller';
+import { Module } from '@nestjs/common';
+import { UserService } from './user.service';
+import { ConfigModule } from '@nestjs/config';
+import { FortyTwoStrategy } from 'src/auth/strategy/FortyTwoStrategy';
+import { JwtStrategy } from 'src/auth/strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
+import { UserController } from './user.controller';
 
-// @Module({
 
-//     controllers: [UserController],
-//      providers: [UserController,],
-// })
-// export class UserModule {}
+@Module({
+  imports: [JwtModule.register({}),ConfigModule],
+  controllers: [UserController],
+  providers: [UserService, FortyTwoStrategy, JwtStrategy, AuthService],
+  exports: [UserService]
+})
+export class UserModule {}
