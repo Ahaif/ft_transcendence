@@ -38,7 +38,7 @@ function Enable2FA() {
   
         if (response.data.success) {
           // Handle successful validation
-          window.location.href = `/dashboard?avatar=${avatar}`;
+          window.location.href = `/dashboard`;
         } 
         else
         {

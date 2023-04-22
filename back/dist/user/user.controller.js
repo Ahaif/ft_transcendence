@@ -22,9 +22,11 @@ const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const multer_1 = require("multer");
 const uuid_1 = require("uuid");
+const auth_service_1 = require("../auth/auth.service");
 let UserController = class UserController {
-    constructor(userService, jwtService) {
+    constructor(userService, authService, jwtService) {
         this.userService = userService;
+        this.authService = authService;
         this.jwtService = jwtService;
     }
     async uploadAvatar(req, file) {
@@ -38,6 +40,12 @@ let UserController = class UserController {
         const url = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
         await this.userService.updateAvatar(url, req.user.username);
         return url;
+    }
+    async userData(req) {
+        const userData = await this.authService.findByUsername(req.user.username);
+        const neWuser = Object.assign(Object.assign({}, userData), { hash: undefined, access_token: undefined, twofa_secret: undefined });
+        console.log(neWuser);
+        return (neWuser);
     }
 };
 __decorate([
@@ -59,9 +67,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "uploadAvatar", null);
+__decorate([
+    (0, common_1.Get)('data'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "userData", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService,
+        auth_service_1.AuthService,
         jwt_1.JwtService])
 ], UserController);
 exports.UserController = UserController;

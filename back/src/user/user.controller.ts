@@ -9,6 +9,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('user')
 export class UserController {
@@ -17,6 +18,7 @@ export class UserController {
 
     constructor(
         private readonly userService: UserService,
+        private readonly authService: AuthService,
         private readonly jwtService: JwtService,
     ) {}
 
@@ -51,4 +53,29 @@ export class UserController {
   
       return url;
     }
+
+    @Get('data')
+    @UseGuards(AuthGuard('jwt'))
+    async userData(@Req() req){
+    const userData = await this.authService.findByUsername(req.user.username)
+    const neWuser = {
+      ...userData,
+      hash: undefined,
+      access_token: undefined,
+      twofa_secret: undefined,
+    };
+    
+    console.log(neWuser)
+    return(neWuser)
   }
+
+
+
+
+
+
+
+
+  }
+
+  

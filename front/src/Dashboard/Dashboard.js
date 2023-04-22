@@ -6,8 +6,11 @@ import './Dashboard.css';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+   const [passwordCorrect, setPasswordCorrect] = useState(false);
   const [avatarLink, setAvatarLink] = useState("");
-  const [hasAvatar, setHasAvatar] = useState(false);
+   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
+  
+
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -18,16 +21,36 @@ const Dashboard = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('access_token');
-    const avatar = searchParams.get('avatar');
+
     if (token) {
       localStorage.setItem('jwt_token', token);
       window.history.replaceState({}, '', '/');
-      setShowPasswordForm(true); // show password form if 2FA is enabled
+      // setShowPasswordForm(true); // show password form if 2FA is enabled
     }
-    if (avatar) {
-      setAvatarLink(avatar);
-      setHasAvatar(true);
+    const jwtToken = localStorage.getItem('jwt_token');
+  
+    if (!jwtToken) {
+      console.error('JWT token not found');
+      return;
     }
+    
+    const config = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+    axios.get('http://10.11.1.1:3000/user/data', config)
+      .then(response => {
+        const { avatar, twoFactorSecret } = response.data;
+        setTwoFactorEnabled(twoFactorSecret);
+        setAvatarLink(avatar);
+        setShowPasswordForm(twoFactorSecret); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+   
   }, []);
 
   const handleAvatarUpload = async (event) => {
@@ -63,7 +86,7 @@ const Dashboard = () => {
       );
   
       setAvatarLink(response.data);
-      setHasAvatar(true);
+      
     } catch (error) {
       console.error(error);
     }
@@ -81,7 +104,6 @@ const Dashboard = () => {
       return;
     }
    
-
     const config = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -97,7 +119,9 @@ const Dashboard = () => {
   
       if (response.data.success) {
         // Handle successful validation
-        window.location.href = `/dashboard?avatar=${avatarLink}`;
+        setShowPasswordForm(false);
+        setPasswordCorrect(true);
+        // window.location.href = `/dashboard?avatar=${avatarLink}`;
       }
     } catch (error) {
 
@@ -105,29 +129,34 @@ const Dashboard = () => {
       window.location.href = '/login'
     }
   
-    setShowPasswordForm(false); // hide password form after submission
+    // setShowPasswordForm(false); // hide password form after submission
   };
-
 
   return (
     <div className="dashboard">
-      <h1>Login Successful!</h1>
-      <div className="avatar-container">
-        <div className="avatar">
-          <img src={avatarLink} alt="avatar" />
-          <label className="avatar-label" htmlFor="avatar-input">
-            Change
-          </label>
-        </div>
-        <input
-          className="upload-btn"
-          type="file"
-          name="file"
-          id="avatar-input"
-          onChange={handleAvatarUpload}
-        />
-      </div>
-      {showPasswordForm ? (
+      {!twoFactorEnabled ? (
+        <>
+          <h1>Login Successful - 2FA Disabled!</h1>
+          <div className="avatar-container">
+            <div className="avatar">
+              <img src={avatarLink} alt="avatar" />
+              <label className="avatar-label" htmlFor="avatar-input">
+                Change
+              </label>
+            </div>
+            <input
+              className="upload-btn"
+              type="file"
+              name="file"
+              id="avatar-input"
+              onChange={handleAvatarUpload}
+            />
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log out
+          </button>
+        </>
+      ) : showPasswordForm ? (
         <form onSubmit={handlePasswordSubmit}>
           <label>
             Google auth Password:
@@ -135,14 +164,35 @@ const Dashboard = () => {
           </label>
           <button type="submit">Submit</button>
         </form>
+      ) : passwordCorrect ? (
+        <>
+          <h1>Login Successful with 2FA Enabled!</h1>
+          <div className="avatar-container">
+            <div className="avatar">
+              <img src={avatarLink} alt="avatar" />
+              <label className="avatar-label" htmlFor="avatar-input">
+                Change
+              </label>
+            </div>
+            <input
+              className="upload-btn"
+              type="file"
+              name="file"
+              id="avatar-input"
+              onChange={handleAvatarUpload}
+            />
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log out
+          </button>
+        </>
       ) : (
-        <button className="logout-btn" onClick={handleLogout}>
-          Log out
-        </button>
+        <p>Incorrect password. Please try again.</p>
       )}
     </div>
   );
   
-      }
+}
+    
 
 export default Dashboard;
