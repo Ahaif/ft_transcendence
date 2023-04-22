@@ -6,6 +6,7 @@ import './Dashboard.css';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [avatarLink, setAvatarLink] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -16,10 +17,14 @@ const Dashboard = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('access_token');
+    const avatar = searchParams.get('avatar');
     if (token) {
       localStorage.setItem('jwt_token', token);
       window.history.replaceState({}, '', '/');
       setShowPasswordForm(true); // show password form if 2FA is enabled
+    }
+    if (avatar) {
+      setAvatarLink(avatar);
     }
   }, []);
 
@@ -28,12 +33,13 @@ const Dashboard = () => {
     const password = event.target.password.value; 
     // TODO: validate the password and send it to the server for verification
     const jwtToken = localStorage.getItem('jwt_token');
-    console.log(jwtToken);
+  
     if (!jwtToken) {
       console.error('JWT token not found');
       return;
     }
-  
+   
+
     const config = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -49,7 +55,7 @@ const Dashboard = () => {
   
       if (response.data.success) {
         // Handle successful validation
-        window.location.href = '/dashboard';
+        window.location.href = `/dashboard?avatar=${avatarLink}`;
       }
     } catch (error) {
 
@@ -65,6 +71,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <h1>Login Successful!</h1>
+      {avatarLink && <img src={avatarLink} alt="avatar" />}
       {showPasswordForm ? (
         <form onSubmit={handlePasswordSubmit}>
           <label>

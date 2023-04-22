@@ -6,12 +6,14 @@ import './Enable2FA.css';
 function Enable2FA() {
   const [qrCodeUrl, setQRCodeUrl] = useState('');
   const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [avatar, setAvatar] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
   
     try {
       const jwtToken = localStorage.getItem('jwt_token');
+      
       console.log(jwtToken);
       if (!jwtToken) {
         // Handle the case where the JWT token is not present
@@ -36,7 +38,7 @@ function Enable2FA() {
   
         if (response.data.success) {
           // Handle successful validation
-          window.location.href = '/dashboard';
+          window.location.href = `/dashboard?avatar=${avatar}`;
         } 
         else
         {
@@ -63,12 +65,16 @@ function Enable2FA() {
       try {
         const searchParams = new URLSearchParams(window.location.search);
         const accessToken = searchParams.get('access_token');
+        const avatarParam = searchParams.get('avatar');
 
         if (accessToken) {
           localStorage.setItem('jwt_token', accessToken);
           // Remove the access token from the URL to prevent accidental sharing
-          window.history.replaceState({}, '', '/');
+          // window.history.replaceState({}, '', '/');
               
+        }
+        if (avatarParam) {
+          setAvatar(avatarParam);
         }
       } catch (error) {
         console.log(error);
@@ -109,7 +115,7 @@ function Enable2FA() {
       )}
       <div className="skip-2fa-container">
         <p>Or, if you want to skip this step for now, you can continue to your dashboard:</p>
-        <a href="/dashboard">Go to Dashboard</a>
+        <a href={`/dashboard?avatar=${avatar}`}>Go to Dashboard</a>
       </div>
     </div>
   );
