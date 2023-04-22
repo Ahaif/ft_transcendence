@@ -38,6 +38,7 @@ export class UserController {
       }),
     )
     async uploadAvatar(@Req() req, @UploadedFile() file: Express.Multer.File) {
+      console.log("invoked")
       if (!file) {
         throw new BadRequestException('No file uploaded');
       }

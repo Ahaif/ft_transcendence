@@ -110,6 +110,7 @@ export class AuthService {
             access_token,
             twoFactorSecret: false,
             avatar : profile._json.image.link
+
           }
         });
     

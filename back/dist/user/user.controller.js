@@ -28,6 +28,7 @@ let UserController = class UserController {
         this.jwtService = jwtService;
     }
     async uploadAvatar(req, file) {
+        console.log("invoked");
         if (!file) {
             throw new common_3.BadRequestException('No file uploaded');
         }

@@ -7,6 +7,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [avatarLink, setAvatarLink] = useState("");
+  const [hasAvatar, setHasAvatar] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -25,8 +26,49 @@ const Dashboard = () => {
     }
     if (avatar) {
       setAvatarLink(avatar);
+      setHasAvatar(true);
     }
   }, []);
+
+  const handleAvatarUpload = async (event) => {
+    event.preventDefault();
+    const fileInput = event.target.elements.file;
+  if (!fileInput) {
+    console.error('File input not found');
+    return;
+  }
+  const file = fileInput.files[0];
+    const jwtToken = localStorage.getItem('jwt_token');
+  
+    if (!jwtToken) {
+      console.error('JWT token not found');
+      return;
+    }
+    
+    const config = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      const response = await axios.post(
+        'http://10.11.1.1:3000/users/avatar',
+        formData,
+        config
+      );
+  
+      setAvatarLink(response.data);
+      setHasAvatar(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   const handlePasswordSubmit = async (event) => {
     event.preventDefault(); 
@@ -67,24 +109,40 @@ const Dashboard = () => {
   };
 
 
-
   return (
     <div className="dashboard">
       <h1>Login Successful!</h1>
-      {avatarLink && <img src={avatarLink} alt="avatar" />}
+      <div className="avatar-container">
+        <div className="avatar">
+          <img src={avatarLink} alt="avatar" />
+          <label className="avatar-label" htmlFor="avatar-input">
+            Change
+          </label>
+        </div>
+        <input
+          className="upload-btn"
+          type="file"
+          name="file"
+          id="avatar-input"
+          onChange={handleAvatarUpload}
+        />
+      </div>
       {showPasswordForm ? (
         <form onSubmit={handlePasswordSubmit}>
           <label>
-             Google auth Password:
+            Google auth Password:
             <input type="password" name="password" />
           </label>
           <button type="submit">Submit</button>
         </form>
       ) : (
-        <button onClick={handleLogout}>Log out</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          Log out
+        </button>
       )}
     </div>
   );
-};
+  
+      }
 
 export default Dashboard;
