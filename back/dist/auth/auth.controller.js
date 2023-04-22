@@ -30,11 +30,12 @@ let AuthController = class AuthController {
         try {
             const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret, req.user.displayName);
             const displayName = req.user.displayName;
+            const avatar = req.user.avatar;
             if (req.user.twoFactorSecret) {
-                res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}`);
+                res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
             else {
-                res.redirect(`http://10.11.1.1:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}`);
+                res.redirect(`http://10.11.1.1:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
         }
         catch (error) {
