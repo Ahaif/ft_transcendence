@@ -1,4 +1,4 @@
-import { Controller, Get,Post, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get,Post, UseGuards, Req, Body, Res } from '@nestjs/common';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BadRequestException } from '@nestjs/common';
@@ -14,8 +14,6 @@ import { AuthService } from 'src/auth/auth.service';
 @Controller('user')
 export class UserController {
 
-    // private readonly UPLOADS_FOLDER = './uploads';
-
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -23,7 +21,6 @@ export class UserController {
     ) {}
 
     
-
 
     @Post('avatar')
     @UseGuards(AuthGuard('jwt'))
@@ -39,6 +36,7 @@ export class UserController {
         }),
       }),
     )
+
     async uploadAvatar(@Req() req, @UploadedFile() file: Express.Multer.File) {
       console.log("invoked")
       if (!file) {
@@ -69,12 +67,25 @@ export class UserController {
     return(neWuser)
   }
 
+  @Post('displayName')
+  @UseGuards(AuthGuard('jwt'))
+  async add_displayName(@Req() req,@Body() body, @Res() res){
+    try{
+      const displayName = body.displayName;
 
+      const existingUser = await this.userService.findBydisplayName(displayName);
+      if(existingUser) {
+        return res.status(400).json({ message: 'Display name already exists' });
+      }
 
-
-
-
-
+      await this.userService.addDisplayName(displayName, req.user.username);
+    
+      res.status(200).json({ displayName });
+    } catch (error) {
+      console.error('Error Saving displayName :', error);
+      res.status(500).send('Error Saving displayName');
+    }
+  }
 
   }
 

@@ -8,6 +8,7 @@ CREATE TABLE "Users" (
     "twoFactorSecret" BOOLEAN DEFAULT false,
     "twofa_secret" TEXT DEFAULT '',
     "avatar" TEXT DEFAULT '',
+    "displayName" TEXT NOT NULL,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -20,3 +21,6 @@ CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_access_token_key" ON "Users"("access_token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Users_displayName_key" ON "Users"("displayName");

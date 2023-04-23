@@ -5,6 +5,7 @@ const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const cookieParser = require("cookie-parser");
 const express = require("express");
+const bodyParser = require("body-parser");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
@@ -15,6 +16,7 @@ async function bootstrap() {
     }));
     app.use(cookieParser());
     app.use('/uploads', express.static('uploads'));
+    app.use(bodyParser.json());
     await app.listen(3000);
 }
 bootstrap();

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,10 @@ async function bootstrap() {
   app.use(cookieParser());
    // Serve uploaded files statically
    app.use('/uploads', express.static('uploads'));
+
+   // Enable JSON parsing for all routes
+  app.use(bodyParser.json());
+
   await app.listen(3000);
 }
 bootstrap();

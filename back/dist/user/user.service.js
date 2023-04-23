@@ -34,6 +34,32 @@ let UserService = class UserService {
             throw new common_1.InternalServerErrorException('Failed to update avatar');
         }
     }
+    async addDisplayName(displayName, username) {
+        try {
+            const updatedUser = await this.prisma.users.update({
+                where: { username },
+                data: { displayName: displayName },
+            });
+            if (!updatedUser) {
+                return null;
+            }
+            return displayName;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Failed to add displayName');
+        }
+    }
+    async findBydisplayName(displayName) {
+        const user = await this.prisma.users.findUnique({
+            where: {
+                displayName: displayName,
+            },
+        });
+        if (user) {
+            delete user.hash;
+        }
+        return user;
+    }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),

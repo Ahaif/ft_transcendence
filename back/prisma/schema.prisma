@@ -19,6 +19,7 @@ model Users {
   twoFactorSecret Boolean? @default(false)
   twofa_secret    String? @default("")
   avatar          String? @default("")
+  displayName     String @unique
 
   @@map("Users")
 }

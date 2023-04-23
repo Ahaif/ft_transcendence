@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+import GameInterface from '../GameInterface/GameInterface';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,11 +13,6 @@ const Dashboard = () => {
   
 
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('jwt_token');
-    navigate('/login');
-  };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -43,6 +39,12 @@ const Dashboard = () => {
     axios.get('http://10.11.1.1:3000/user/data', config)
       .then(response => {
         const { avatar, twoFactorSecret } = response.data;
+        if(!twoFactorSecret)
+        {
+          window.location.href = `/game?avatar=${avatar}`;
+        }
+
+
         setTwoFactorEnabled(twoFactorSecret);
         setAvatarLink(avatar);
         setShowPasswordForm(twoFactorSecret); 
@@ -121,7 +123,7 @@ const Dashboard = () => {
         // Handle successful validation
         setShowPasswordForm(false);
         setPasswordCorrect(true);
-        // window.location.href = `/dashboard?avatar=${avatarLink}`;
+        window.location.href = `/game?avatar=${avatarLink}`;
       }
     } catch (error) {
 
@@ -134,29 +136,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      {!twoFactorEnabled ? (
-        <>
-          <h1>Login Successful - 2FA Disabled!</h1>
-          <div className="avatar-container">
-            <div className="avatar">
-              <img src={avatarLink} alt="avatar" />
-              <label className="avatar-label" htmlFor="avatar-input">
-                Change
-              </label>
-            </div>
-            <input
-              className="upload-btn"
-              type="file"
-              name="file"
-              id="avatar-input"
-              onChange={handleAvatarUpload}
-            />
-          </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Log out
-          </button>
-        </>
-      ) : showPasswordForm ? (
+      {showPasswordForm ? (
         <form onSubmit={handlePasswordSubmit}>
           <label>
             Google auth Password:
@@ -164,31 +144,7 @@ const Dashboard = () => {
           </label>
           <button type="submit">Submit</button>
         </form>
-      ) : passwordCorrect ? (
-        <>
-          <h1>Login Successful with 2FA Enabled!</h1>
-          <div className="avatar-container">
-            <div className="avatar">
-              <img src={avatarLink} alt="avatar" />
-              <label className="avatar-label" htmlFor="avatar-input">
-                Change
-              </label>
-            </div>
-            <input
-              className="upload-btn"
-              type="file"
-              name="file"
-              id="avatar-input"
-              onChange={handleAvatarUpload}
-            />
-          </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Log out
-          </button>
-        </>
-      ) : (
-        <p>Incorrect password. Please try again.</p>
-      )}
+      ) : null}
     </div>
   );
   

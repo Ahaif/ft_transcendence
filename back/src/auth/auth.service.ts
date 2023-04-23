@@ -109,7 +109,8 @@ export class AuthService {
             username: profile.username,
             access_token,
             twoFactorSecret: false,
-            avatar : profile._json.image.link
+            avatar : profile._json.image.link,
+            displayName: ""
 
           }
         });

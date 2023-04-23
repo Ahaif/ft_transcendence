@@ -47,6 +47,21 @@ let UserController = class UserController {
         console.log(neWuser);
         return (neWuser);
     }
+    async add_displayName(req, body, res) {
+        try {
+            const displayName = body.displayName;
+            const existingUser = await this.userService.findBydisplayName(displayName);
+            if (existingUser) {
+                return res.status(400).json({ message: 'Display name already exists' });
+            }
+            await this.userService.addDisplayName(displayName, req.user.username);
+            res.status(200).json({ displayName });
+        }
+        catch (error) {
+            console.error('Error Saving displayName :', error);
+            res.status(500).send('Error Saving displayName');
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('avatar'),
@@ -75,6 +90,16 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "userData", null);
+__decorate([
+    (0, common_1.Post)('displayName'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "add_displayName", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService,

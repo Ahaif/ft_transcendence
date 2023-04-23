@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, InternalServerErrorException } from '@ne
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-
+import { Users } from '@prisma/client';
 
 
 
@@ -31,6 +31,38 @@ export class UserService {
           } catch (error) {
             throw new InternalServerErrorException('Failed to update avatar');
           }
+
+    }
+
+    async addDisplayName(displayName:string, username:string):Promise<string>
+    {
+      try {
+        
+        const updatedUser = await this.prisma.users.update({
+          where: { username },
+          data: { displayName : displayName},
+        });
+        if (!updatedUser) {
+          return null;
+        }
+        return displayName;
+      } catch (error) {
+        throw new InternalServerErrorException('Failed to add displayName');
+      }
+
+    }
+
+    async findBydisplayName(displayName : string): Promise<Users | null> {
+      const user = await this.prisma.users.findUnique({
+        where: {
+          displayName: displayName,
+        },
+      });
+      if (user) {
+        delete user.hash;
+      }
+    
+      return user;
 
     }
     
