@@ -30,7 +30,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // console.log(profile.displayName);
     // console.log(profile.photos);
     
-    console.log(profile._json.image.link);
+    
     cb(null, neWuser);
     
   }

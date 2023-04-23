@@ -51,6 +51,14 @@
     .gameInterface .upload-btn {
     display: none;
     }
+
+    .gameInterface .display-name {
+        font-size: 18px;
+        position: absolute;
+        top: 200px;
+        left: 60px;
+        background-color: rgb(52, 223, 184)
+      }
     
     .gameInterface .logout-btn {
     position: absolute;

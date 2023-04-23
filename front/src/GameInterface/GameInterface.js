@@ -9,7 +9,10 @@ function GameInterface() {
   const [avatarLink, setAvatarLink] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isDisplayNameEntered, setIsDisplayNameEntered] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(true);
 
+
+ 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('access_token');
@@ -38,7 +41,8 @@ function GameInterface() {
       {
         setDisplayName(displayName)
         setIsDisplayNameEntered(true);
-        
+        setIsLoaded(false)
+
       }
       else
       {
@@ -61,12 +65,14 @@ function GameInterface() {
 
   const handleAvatarUpload = async (event) => {
     event.preventDefault();
-    const fileInput = event.target.elements.file;
+    console.log(event.target.files[0])
+    // console.log(event.target.elements.file)
+    const fileInput = event.target.files[0];
     if (!fileInput) {
       console.error('File input not found');
       return;
     }
-    const file = fileInput.files[0];
+    // const file = fileInput.files[0];
     const jwtToken = localStorage.getItem('jwt_token');
 
     if (!jwtToken) {
@@ -82,11 +88,11 @@ function GameInterface() {
     };
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', fileInput);
 
     try {
       const response = await axios.post(
-        'http://10.11.1.1:3000/users/avatar',
+        'http://10.11.1.1:3000/user/avatar',
         formData,
         config
       );
@@ -121,24 +127,15 @@ function GameInterface() {
      
       if (response.data.displayName) {
         setIsDisplayNameEntered(true);
+        setIsLoaded(false);
       }
     } catch (error) {
-      // if (error.response && error.response.data.message === 'Display name already exists') {
-      //   alert('Display name already exists');
-      // } else {
-      //   alert('Error setting display name');
-      // }
       alert('Name already Exist')
-      
     }
   
   };
 
-  // const jwtToken = localStorage.getItem('jwt_token');
-  // if (!jwtToken) {
-  //   navigate('/login');
-  //   return null;
-  // }
+  
 
   if (!isDisplayNameEntered) {
     return (
@@ -156,11 +153,11 @@ function GameInterface() {
         </form>
       </div>
     );
-  } else {
+  } else if(!isLoaded) {
     return (
       <div className="gameInterface">
         <>
-          <h1>Login Successful ! {displayName}</h1>
+          <h1>Login Successful ! </h1>
           <div className="avatar-container">
             <div className="avatar">
               <img src={avatarLink} alt="avatar" />
@@ -168,7 +165,6 @@ function GameInterface() {
                 Change
               </label>
             </div>
-  
             <input
               className="upload-btn"
               type="file"
@@ -177,6 +173,9 @@ function GameInterface() {
               onChange={handleAvatarUpload}
             />
           </div>
+          <div className="display-name">
+              {displayName}
+           </div>
           <button className="logout-btn" onClick={handleLogout}>
             Log out
           </button>

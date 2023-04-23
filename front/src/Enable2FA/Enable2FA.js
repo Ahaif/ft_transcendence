@@ -8,6 +8,33 @@ function Enable2FA() {
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [avatar, setAvatar] = useState('');
 
+
+
+  useEffect(() => {
+    const getAccessToken = async () => {
+      try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const accessToken = searchParams.get('access_token');
+        const avatarParam = searchParams.get('avatar');
+
+        if (accessToken) {
+          localStorage.setItem('jwt_token', accessToken);
+          // Remove the access token from the URL to prevent accidental sharing
+          window.history.replaceState({}, '', '/');
+              
+        }
+        if (avatarParam) {
+          setAvatar(avatarParam);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAccessToken();
+  }, []);
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -59,30 +86,6 @@ function Enable2FA() {
       window.location.href = '/login'
     }
   };
-
-  useEffect(() => {
-    const getAccessToken = async () => {
-      try {
-        const searchParams = new URLSearchParams(window.location.search);
-        const accessToken = searchParams.get('access_token');
-        const avatarParam = searchParams.get('avatar');
-
-        if (accessToken) {
-          localStorage.setItem('jwt_token', accessToken);
-          // Remove the access token from the URL to prevent accidental sharing
-          // window.history.replaceState({}, '', '/');
-              
-        }
-        if (avatarParam) {
-          setAvatar(avatarParam);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getAccessToken();
-  }, []);
 
   return (
     <div className="enable-2fa-container">

@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
-import GameInterface from '../GameInterface/GameInterface';
+
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-   const [passwordCorrect, setPasswordCorrect] = useState(false);
   const [avatarLink, setAvatarLink] = useState("");
-   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   
 
 
@@ -41,11 +39,9 @@ const Dashboard = () => {
         const { avatar, twoFactorSecret } = response.data;
         if(!twoFactorSecret)
         {
-          window.location.href = `/game?avatar=${avatar}`;
+          window.location.href = `/game?access_token=${jwtToken}&avatar=${avatarLink}`;
         }
 
-
-        setTwoFactorEnabled(twoFactorSecret);
         setAvatarLink(avatar);
         setShowPasswordForm(twoFactorSecret); 
       })
@@ -55,44 +51,6 @@ const Dashboard = () => {
    
   }, []);
 
-  const handleAvatarUpload = async (event) => {
-    event.preventDefault();
-    const fileInput = event.target.elements.file;
-  if (!fileInput) {
-    console.error('File input not found');
-    return;
-  }
-  const file = fileInput.files[0];
-    const jwtToken = localStorage.getItem('jwt_token');
-  
-    if (!jwtToken) {
-      console.error('JWT token not found');
-      return;
-    }
-    
-    const config = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    };
-
-    const formData = new FormData();
-    formData.append('file', file);
-  
-    try {
-      const response = await axios.post(
-        'http://10.11.1.1:3000/users/avatar',
-        formData,
-        config
-      );
-  
-      setAvatarLink(response.data);
-      
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
 
   const handlePasswordSubmit = async (event) => {
@@ -105,7 +63,6 @@ const Dashboard = () => {
       console.error('JWT token not found');
       return;
     }
-   
     const config = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -122,16 +79,13 @@ const Dashboard = () => {
       if (response.data.success) {
         // Handle successful validation
         setShowPasswordForm(false);
-        setPasswordCorrect(true);
-        window.location.href = `/game?avatar=${avatarLink}`;
+        window.location.href = `/game?access_token=${jwtToken}&avatar=${avatarLink}`;
       }
     } catch (error) {
 
       alert('Incorrect password entered. this incident will be reported.');
       window.location.href = '/login'
     }
-  
-    // setShowPasswordForm(false); // hide password form after submission
   };
 
   return (

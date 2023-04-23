@@ -30,7 +30,6 @@ let UserController = class UserController {
         this.jwtService = jwtService;
     }
     async uploadAvatar(req, file) {
-        console.log("invoked");
         if (!file) {
             throw new common_3.BadRequestException('No file uploaded');
         }
@@ -44,7 +43,6 @@ let UserController = class UserController {
     async userData(req) {
         const userData = await this.authService.findByUsername(req.user.username);
         const neWuser = Object.assign(Object.assign({}, userData), { hash: undefined, access_token: undefined, twofa_secret: undefined });
-        console.log(neWuser);
         return (neWuser);
     }
     async add_displayName(req, body, res) {

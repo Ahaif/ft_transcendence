@@ -25,24 +25,15 @@ export class AuthController {
     private readonly jwtService: JwtService,
     ) {}
 
-  // @Get('42')
-  // @UseGuards(AuthGuard('42'))
-  // async fortyTwoAuth(): Promise<void> {}
-
   @Get('dashboard')
   @UseGuards(AuthGuard('42'))
   async dashboard(@Req() req, @Res() res) {
-
-    // console.log("---req user----")
-    // console.log(req.user);
 
     try {
        const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret, req.user.displayName);
        const displayName = req.user.displayName
        const avatar = req.user.avatar
        if (req.user.twoFactorSecret) {
-        //redirect to password form for validation before redirecting to dashboard
-        
         res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
 
       }
@@ -53,9 +44,9 @@ export class AuthController {
     console.error('Error exchanging code for token:', error);
     console.log(error)
   }
-    
   }
 
+  
   @Get('generate-42-auth-url')
   async generate42AuthUrl(@Req() req): Promise<{ url: string }> {
     const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';

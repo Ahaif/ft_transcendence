@@ -20,8 +20,6 @@ export class UserController {
         private readonly jwtService: JwtService,
     ) {}
 
-    
-
     @Post('avatar')
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(
@@ -38,7 +36,6 @@ export class UserController {
     )
 
     async uploadAvatar(@Req() req, @UploadedFile() file: Express.Multer.File) {
-      console.log("invoked")
       if (!file) {
         throw new BadRequestException('No file uploaded');
       }
@@ -63,7 +60,6 @@ export class UserController {
       twofa_secret: undefined,
     };
     
-    console.log(neWuser)
     return(neWuser)
   }
 
