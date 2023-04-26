@@ -57,13 +57,18 @@ let ApiController = class ApiController {
         const acceptedRequest = await this.apiService.acceptFriendRequest(userId, parsedFriendshipId);
         res.status(200).json({ acceptedRequest });
     }
-    async setOnlineStatus(req) {
-        const id = req.user.id;
-        const user = await this.prisma.users.update({
-            where: { id },
-            data: { status: 'online' },
-        });
-        return user;
+    async setOnlineStatus(req, res) {
+        try {
+            const id = req.user.id;
+            const user = await this.prisma.users.update({
+                where: { id },
+                data: { status: 'disconnected' },
+            });
+            res.status(200).json("status changed");
+        }
+        catch (error) {
+            res.status(400).json({ error });
+        }
     }
 };
 __decorate([
@@ -95,11 +100,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApiController.prototype, "acceptFriendRequest", null);
 __decorate([
-    (0, common_1.Put)(':id/status/online'),
+    (0, common_1.Get)('id/status/change'),
     (0, common_2.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ApiController.prototype, "setOnlineStatus", null);
 ApiController = __decorate([

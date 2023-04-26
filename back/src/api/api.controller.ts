@@ -72,17 +72,25 @@ export class ApiController {
         }
 
 
-        @Put(':id/status/online')
+        @Get('id/status/change')
         @UseGuards(AuthGuard('jwt'))
-        async setOnlineStatus(@Req() req) {
+        async setOnlineStatus(@Req() req, @Res() res) {
+            try {
+                const id = req.user.id
+                const user = await this.prisma.users.update({
+                where: { id },
+                data: { status: 'disconnected' },
+                });
+              res.status(200).json("status changed" );
+
+            }catch(error)
+            {
+                res.status(400).json({error})
+            }
             
-            const id = req.user.id
-          const user = await this.prisma.users.update({
-            where: { id },
-            data: { status: 'online' },
-          });
-          return user;
         }
+
+        
       
 
         

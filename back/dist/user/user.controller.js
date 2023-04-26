@@ -53,7 +53,7 @@ let UserController = class UserController {
                 return res.status(400).json({ message: 'Display name already exists' });
             }
             await this.userService.addDisplayName(displayName, req.user.id);
-            res.status(200).json({ displayName });
+            res.status(200).json({ displayName, });
         }
         catch (error) {
             console.error('Error Saving displayName :', error);

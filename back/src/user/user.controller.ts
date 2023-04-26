@@ -75,8 +75,9 @@ export class UserController {
       }
 
       await this.userService.addDisplayName(displayName, req.user.id);
+
     
-      res.status(200).json({ displayName });
+      res.status(200).json({ displayName,});
     } catch (error) {
       console.error('Error Saving displayName :', error);
       res.status(500).send('Error Saving displayName');
