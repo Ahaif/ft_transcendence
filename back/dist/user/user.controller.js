@@ -48,6 +48,7 @@ let UserController = class UserController {
     async add_displayName(req, body, res) {
         try {
             const displayName = body.displayName;
+            console.log("displayName");
             const existingUser = await this.userService.findBydisplayName(displayName);
             if (existingUser) {
                 return res.status(400).json({ message: 'Display name already exists' });

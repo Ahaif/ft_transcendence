@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 import './GameInterface.css';
@@ -10,61 +10,98 @@ function GameInterface() {
   const [displayName, setDisplayName] = useState('');
   const [isDisplayNameEntered, setIsDisplayNameEntered] = useState(true);
   const [isLoaded, setIsLoaded] = useState(true);
-  const [onlineStatus, setOnlineStatus] =  useState('Not Connected')
+  const [onlineStatus, setOnlineStatus] =  useState('');
 
+
+useEffect(() => {
+  console.log({onlineStatus});
+}, [onlineStatus])
 
  
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const token = searchParams.get('access_token');
+    console.log("useEffect");
+
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const token = searchParams.get('access_token');
     
-    if (token) {
-      localStorage.setItem('jwt_token', token);
-      window.history.replaceState({}, '', '/');
-    }
+      if (token) {
+        localStorage.setItem('jwt_token', token);
+        // window.history.replaceState({}, '', '/');
+      }
+    
+      const jwtToken = localStorage.getItem('jwt_token');
+    
+      if (!jwtToken) {
+        console.error('JWT token not found');
+        return;
+      }
+    
+      const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      fetch_data();
+    
+      async function fetch_data() {
+        try {
+          const response =  await axios.get('http://10.11.1.1:3000/user/data', config);
+    
+          const { avatar, displayName, status } = response.data;
+    
+          if (displayName) {
+            
+            setDisplayName(displayName);
+            setIsDisplayNameEntered(true);
+            setIsLoaded(false);
+            
+           
+          } else {
+            setIsDisplayNameEntered(false);
+          }
+    
+          if (avatar) {
+            setAvatarLink(avatar);
+          }
+          if(status === "disconnected")
+          {
+            change_status();
+            console.log("passed")
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+   
+    }, []);
+
+  const handleLogout = async () => {
+    
     const jwtToken = localStorage.getItem('jwt_token');
-  
-    if (!jwtToken) {
-      console.error('JWT token not found');
-      return;
+    if(!jwtToken)
+    {
+      console.log("jwt_token is not found")
+      return
     }
-    
     const config = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
-        'Content-Type': 'multipart/form-data',
       },
     };
-    axios.get('http://10.11.1.1:3000/user/data', config)
-    .then(response => {
-      const {avatar, displayName, status } = response.data;
-      if(displayName)
-      {
-        setDisplayName(displayName)
-        setIsDisplayNameEntered(true);
 
-        setOnlineStatus(status)
-        setIsLoaded(false)
+    console.log(jwtToken)
+    const data = {
+      status: 'disconnected'
+    };
+    
+    await axios.put('http://10.11.1.1:3000/api/id/status/change',data, config);
+    navigate('/login');
 
-      }
-      else
-      {
-        setIsDisplayNameEntered(false);
-      }
-
-      if (avatar) {
-        setAvatarLink(avatar);
-      }
-    })
-
-
-
-  }, []);
-
-  const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('jwt_token');
-    navigate('/login');
   };
 
   const handleAvatarUpload = async (event) => {
@@ -129,14 +166,45 @@ function GameInterface() {
       );
      
       if (response.data.displayName) {
+        
         setIsDisplayNameEntered(true);
+        setOnlineStatus("connected")
         setIsLoaded(false);
       }
+  
     } catch (error) {
       alert('Name already Exist')
     }
-  
   };
+
+
+  const change_status = async()=>{
+
+        const jwtToken = localStorage.getItem('jwt_token');
+
+        if (!jwtToken) {
+          console.error('JWT token not found');
+          return;
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            
+          },
+        };
+
+        const data = { status: 'connected' };
+        // console.log(data)
+        await axios.put('http://10.11.1.1:3000/api/id/status/change', data, config);
+        setOnlineStatus('connected');
+
+  }
+
+  // if(isDisplayNameEntered)
+  // {
+  //   change_status()
+  // }
 
   
 

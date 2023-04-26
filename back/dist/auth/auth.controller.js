@@ -35,7 +35,7 @@ let AuthController = class AuthController {
                 res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
             else {
-                res.redirect(`http://10.11.1.1:3001/enable-2fa?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
+                res.redirect(`http://10.11.1.1:3001/Enable2FA?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
         }
         catch (error) {

@@ -1,6 +1,6 @@
 
 
-import { Controller, Post, Req, Res, Get, Put, Param } from '@nestjs/common';
+import { Controller, Post, Req, Res, Get, Put, Param, Body } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -72,14 +72,16 @@ export class ApiController {
         }
 
 
-        @Get('id/status/change')
+        @Put('id/status/change')
         @UseGuards(AuthGuard('jwt'))
-        async setOnlineStatus(@Req() req, @Res() res) {
+        async setOnlineStatus(@Req() req, @Res() res, @Body() body) {
+            const data:string = body
+            console.log(body)
             try {
                 const id = req.user.id
                 const user = await this.prisma.users.update({
                 where: { id },
-                data: { status: 'disconnected' },
+                data: data,
                 });
               res.status(200).json("status changed" );
 
