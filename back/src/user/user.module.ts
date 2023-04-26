@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigModule } from '@nestjs/config';
-import { FortyTwoStrategy } from 'src/auth/strategy/FortyTwoStrategy';
-import { JwtStrategy } from 'src/auth/strategy';
+import { FortyTwoStrategy } from 'src/strategy/FortyTwoStrategy';
+import { JwtStrategy } from 'src/strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { UserController } from './user.controller';

@@ -1,4 +1,4 @@
-import { AuthService } from '../auth.service';
+import { AuthService } from '../auth/auth.service';
 declare const FortyTwoStrategy_base: new (...args: any[]) => any;
 export declare class FortyTwoStrategy extends FortyTwoStrategy_base {
     private readonly authService;

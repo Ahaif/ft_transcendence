@@ -28,7 +28,7 @@ let AuthController = class AuthController {
     }
     async dashboard(req, res) {
         try {
-            const jwt_token = await this.authService.signToken(req.user.username, req.user.twoFactorSecret, req.user.displayName);
+            const jwt_token = await this.authService.signToken(req.user.id, req.user.twoFactorSecret, req.user.displayName);
             const displayName = req.user.displayName;
             const avatar = req.user.avatar;
             if (req.user.twoFactorSecret) {
@@ -43,7 +43,7 @@ let AuthController = class AuthController {
             console.log(error);
         }
     }
-    async generate42AuthUrl(req) {
+    async generate42AuthUrl() {
         const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
         const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
         const scope = 'public';
@@ -63,7 +63,7 @@ let AuthController = class AuthController {
                 period: 30,
             }).toString();
             const qrCodeUrl = await qrcode.toDataURL(totpUri);
-            await this.authService.addTwoFASecret(req.user.username, secret.base32);
+            await this.authService.addTwoFASecret(req.user.id, secret.base32);
             res.status(200).json({ qrCodeUrl });
         }
         catch (error) {
@@ -72,20 +72,26 @@ let AuthController = class AuthController {
         }
     }
     async check_two_fa(req, res, body) {
-        const user_data = await this.authService.findByUsername(req.user.username);
-        const secretFromDB = user_data.twofa_secret;
-        const userEnteredCode = body.password;
-        const isValid = otplib_1.authenticator.verify({
-            secret: secretFromDB,
-            token: userEnteredCode
-        });
-        if (isValid) {
-            await this.authService.enableTwoFASecret(req.user.username);
-            console.log("TOTP VALIDATED");
-            res.status(200).json({ success: true });
+        try {
+            const user_data = await this.authService.findByUsername(req.user.id);
+            const secretFromDB = user_data.twofa_secret;
+            const userEnteredCode = body.password;
+            const isValid = otplib_1.authenticator.verify({
+                secret: secretFromDB,
+                token: userEnteredCode
+            });
+            if (isValid) {
+                await this.authService.enableTwoFASecret(req.user.id);
+                console.log("TOTP VALIDATED");
+                res.status(200).json({ success: true });
+            }
+            else {
+                res.status(401).json({ success: false, message: 'Invalid TOTP code' });
+            }
         }
-        else {
-            res.status(401).json({ success: false, message: 'Invalid TOTP code' });
+        catch (error) {
+            console.error('Error validating  Pswd:', error);
+            res.status(500).send('Error validating PSW');
         }
     }
 };
@@ -100,9 +106,8 @@ __decorate([
 ], AuthController.prototype, "dashboard", null);
 __decorate([
     (0, common_1.Get)('generate-42-auth-url'),
-    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "generate42AuthUrl", null);
 __decorate([

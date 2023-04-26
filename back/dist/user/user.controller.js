@@ -37,11 +37,11 @@ let UserController = class UserController {
             throw new common_3.BadRequestException('Missing filename');
         }
         const url = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
-        await this.userService.updateAvatar(url, req.user.username);
+        await this.userService.updateAvatar(url, req.user.id);
         return url;
     }
     async userData(req) {
-        const userData = await this.authService.findByUsername(req.user.username);
+        const userData = await this.authService.findByUsername(req.user.id);
         const neWuser = Object.assign(Object.assign({}, userData), { hash: undefined, access_token: undefined, twofa_secret: undefined });
         return (neWuser);
     }
@@ -52,7 +52,7 @@ let UserController = class UserController {
             if (existingUser) {
                 return res.status(400).json({ message: 'Display name already exists' });
             }
-            await this.userService.addDisplayName(displayName, req.user.username);
+            await this.userService.addDisplayName(displayName, req.user.id);
             res.status(200).json({ displayName });
         }
         catch (error) {

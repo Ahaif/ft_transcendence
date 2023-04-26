@@ -18,6 +18,7 @@ export declare class UserController {
         twoFactorSecret: boolean;
         avatar: string;
         displayName: string;
+        status: string;
     }>;
     add_displayName(req: any, body: any, res: any): Promise<any>;
 }

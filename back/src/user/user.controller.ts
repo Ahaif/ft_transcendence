@@ -44,7 +44,7 @@ export class UserController {
       }
   
       const url = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
-      await this.userService.updateAvatar(url, req.user.username);
+      await this.userService.updateAvatar(url, req.user.id);
   
       return url;
     }
@@ -52,7 +52,7 @@ export class UserController {
     @Get('data')
     @UseGuards(AuthGuard('jwt'))
     async userData(@Req() req){
-    const userData = await this.authService.findByUsername(req.user.username)
+    const userData = await this.authService.findByUsername(req.user.id)
     const neWuser = {
       ...userData,
       hash: undefined,
@@ -74,7 +74,7 @@ export class UserController {
         return res.status(400).json({ message: 'Display name already exists' });
       }
 
-      await this.userService.addDisplayName(displayName, req.user.username);
+      await this.userService.addDisplayName(displayName, req.user.id);
     
       res.status(200).json({ displayName });
     } catch (error) {

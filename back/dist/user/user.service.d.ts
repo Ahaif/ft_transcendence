@@ -7,7 +7,7 @@ export declare class UserService {
     private jwt;
     private config;
     constructor(prisma: PrismaService, jwt: JwtService, config: ConfigService);
-    updateAvatar(imageUrl: string, username: string): Promise<void>;
-    addDisplayName(displayName: string, username: string): Promise<string>;
+    updateAvatar(imageUrl: string, id: number): Promise<void>;
+    addDisplayName(displayName: string, id: number): Promise<string>;
     findBydisplayName(displayName: string): Promise<Users | null>;
 }

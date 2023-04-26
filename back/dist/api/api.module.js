@@ -6,24 +6,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModule = void 0;
+exports.ApiModule = void 0;
 const common_1 = require("@nestjs/common");
-const user_service_1 = require("./user.service");
+const api_controller_1 = require("./api.controller");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const FortyTwoStrategy_1 = require("../strategy/FortyTwoStrategy");
-const strategy_1 = require("../strategy");
-const jwt_1 = require("@nestjs/jwt");
-const auth_service_1 = require("../auth/auth.service");
-const user_controller_1 = require("./user.controller");
-let UserModule = class UserModule {
+const jwt_strategy_1 = require("../strategy/jwt.strategy");
+const api_service_1 = require("./api.service");
+let ApiModule = class ApiModule {
 };
-UserModule = __decorate([
+ApiModule = __decorate([
     (0, common_1.Module)({
         imports: [jwt_1.JwtModule.register({}), config_1.ConfigModule],
-        controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService, FortyTwoStrategy_1.FortyTwoStrategy, strategy_1.JwtStrategy, auth_service_1.AuthService],
-        exports: [user_service_1.UserService]
+        controllers: [api_controller_1.ApiController],
+        providers: [api_service_1.ApiService, auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, FortyTwoStrategy_1.FortyTwoStrategy],
+        exports: [api_service_1.ApiService],
     })
-], UserModule);
-exports.UserModule = UserModule;
-//# sourceMappingURL=user.module.js.map
+], ApiModule);
+exports.ApiModule = ApiModule;
+//# sourceMappingURL=api.module.js.map

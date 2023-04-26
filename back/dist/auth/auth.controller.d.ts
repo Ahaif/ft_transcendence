@@ -5,7 +5,7 @@ export declare class AuthController {
     private readonly jwtService;
     constructor(authService: AuthService, jwtService: JwtService);
     dashboard(req: any, res: any): Promise<void>;
-    generate42AuthUrl(req: any): Promise<{
+    generate42AuthUrl(): Promise<{
         url: string;
     }>;
     showEnable2FA(req: any, res: any): Promise<void>;

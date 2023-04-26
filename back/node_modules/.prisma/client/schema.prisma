@@ -20,6 +20,24 @@ model Users {
   twofa_secret    String? @default("")
   avatar          String? @default("")
   displayName     String @unique
+  status          String? @default("")
+
+
+  friends   Friendship[] @relation("FriendshipUser1")
+  friendOf  Friendship[]  @relation("FriendshipUser2")
+
 
   @@map("Users")
+}
+
+
+model Friendship {
+  id      Int    @id @default(autoincrement())
+  status  String @default("pending")
+  user1Id Int
+  user2Id Int
+  user1   Users  @relation("FriendshipUser1", fields: [user1Id], references: [id])
+  user2   Users  @relation("FriendshipUser2", fields: [user2Id], references: [id])
+
+  @@map("Friendship")
 }

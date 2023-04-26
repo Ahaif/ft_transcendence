@@ -22,13 +22,12 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             secretOrKey: config.get('JWT_SECRET')
         });
         this.config = config;
-        console.log("JwtStrategy constructor called.");
     }
     async validate(payload) {
-        const username = payload.username;
+        const id = payload.id;
         const twoFA = payload.twoFA_sec;
         return {
-            username,
+            id,
             twoFA
         };
     }

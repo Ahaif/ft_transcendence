@@ -11,6 +11,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { AuthController } from './auth/auth.controller';
+import { ApiController } from './api/api.controller';
+import { ApiModule } from './api/api.module';
 
 
 
@@ -23,9 +25,10 @@ import { AuthController } from './auth/auth.controller';
     PrismaModule,
     AuthModule,
     UserModule,
+    ApiModule
     
   ],
-  controllers: [AppController, UserController, AuthController],
+  controllers: [AppController, UserController, AuthController, ApiController],
   providers: [AppService],
   // exports: [CatsService] to export any service to be use by all the modules declared 
 })

@@ -19,7 +19,7 @@ const Dashboard = () => {
     if (token) {
       localStorage.setItem('jwt_token', token);
       window.history.replaceState({}, '', '/');
-      // setShowPasswordForm(true); // show password form if 2FA is enabled
+      setShowPasswordForm(true); // show password form if 2FA is enabled
     }
     const jwtToken = localStorage.getItem('jwt_token');
   

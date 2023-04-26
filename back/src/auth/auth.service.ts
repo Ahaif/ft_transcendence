@@ -25,57 +25,9 @@ export class AuthService {
     private config: ConfigService
     ){}
 
-
-  // async signup(dto : auth_dto){
-  //     // generate pw hash
-  //     const hash = await argon.hash(dto.password);
-
-  //     // save the new user in db 
-  //   try{
-  //     const user = await this.prisma.users.create({
-  //       data : {
-  //         email: dto.email,
-  //         hash,
-  //       },
-  //     });
-  //     delete user.hash;
-  //     return this.signToken(user.id, user.email);
-  //   }
-  //   catch (error) {
-  //     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-  //       throw new ConflictException('Email already exists.');
-  //     }
-  //     throw new InternalServerErrorException('Failed to create user.');
-  //   }
-  // }
-
-
-  //  async signin(dto : auth_dto){
-  //     //find the user by email
-  //     const user = await this.prisma.users.findUnique({
-  //       where: {
-  //         email: dto.email
-  //       },
-  //     });
-
-  //      //if user does not exist throw exceptiom 
-  //     if(!user) throw new ForbiddenException('Credentials inccorect');
-
-  //     //if pw incorrect throw exception
-  //     const pwMatches = await argon.verify(user.hash, dto.password)
-  //     if(!pwMatches) throw new ForbiddenException('Credentials inccorect');
-
-  //     // //send back 
-  //     // delete user.hash
-  //     return this.signToken(user.id, user.email);
-
-  //   }
-
-
-
-    async signToken(username: string, twoFA_sec: boolean, displayName: string): Promise<string > {
+    async signToken(id: number, twoFA_sec: boolean, displayName: string): Promise<string > {
       const payload = {
-        username,
+        id,
         twoFA_sec,
         displayName
        
@@ -124,48 +76,22 @@ export class AuthService {
         throw new InternalServerErrorException('Failed to create user.');
       }
     }
-  async findByUsername(username: string): Promise<Users | null> {
+
+    
+  async findByUsername(id: number): Promise<Users | null> {
     const user = await this.prisma.users.findUnique({
       where: {
-        username: username,
+        id: id,
       },
     });
     delete user.hash
     return user
   }
 
-
-
- 
-
-    async exchangeCodeForToken(code: any) {
-      const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
-      const clientSecret = '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';
-      const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
-      
-      try {
-        const response = await axios.post('https://api.intra.42.fr/oauth/token', {
-          grant_type: 'client_credentials',
-          code,
-          client_id: clientId,
-          client_secret: clientSecret,
-          redirect_uri: redirectUri,
-        });
-
-    
-        return response.data.access_token;
-      } catch (error) {
-        if (error.response.data.error === 'invalid_grant') {
-          throw new Error('Incorrect authorization grant: The authorization grant could be invalid, expired, revoked, or may not match the redirection URI used in the authorization request.');
-        }
-        throw error;
-      }
-  }
-
-  async addTwoFASecret(username: string, secret: string): Promise<void> {
+  async addTwoFASecret(id: number, secret: string): Promise<void> {
     try {
       const updatedUser = await this.prisma.users.update({
-        where: { username },
+        where: { id },
         data: { twofa_secret: secret },
       });
       if (!updatedUser) {
@@ -177,10 +103,10 @@ export class AuthService {
   }
   
 
-  async enableTwoFASecret(username: string): Promise<void> {
+  async enableTwoFASecret(id: number): Promise<void> {
     try {
       const updatedUser = await this.prisma.users.update({
-        where: { username },
+        where: { id },
         data: { twoFactorSecret: true },
       });
       if (!updatedUser) {
@@ -191,30 +117,8 @@ export class AuthService {
     }
   }
 
-
-
 }
     
-
-  // async validateUser(username: string, pass: string): Promise<any> {
-  //   const user = await this.usersService.findOne(username);
-  //   if (user && user.password === pass) {
-  //     const { password, ...result } = user;
-  //     return result;
-  //   }
-  //   return null;
-  // }
-
-
-  // async login(user: any) {
-  //   const payload = { username: user.username, sub: user.userId };
-  //   return {
-  //     access_token: this.jwtService.sign(payload),
-  //   };
-  // }
-
-
-
 
 
 

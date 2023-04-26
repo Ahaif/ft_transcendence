@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
-const axios_1 = require("axios");
 const common_2 = require("@nestjs/common");
 const common_3 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
@@ -23,9 +22,9 @@ let AuthService = class AuthService {
         this.jwt = jwt;
         this.config = config;
     }
-    async signToken(username, twoFA_sec, displayName) {
+    async signToken(id, twoFA_sec, displayName) {
         const payload = {
-            username,
+            id,
             twoFA_sec,
             displayName
         };
@@ -66,40 +65,19 @@ let AuthService = class AuthService {
             throw new common_3.InternalServerErrorException('Failed to create user.');
         }
     }
-    async findByUsername(username) {
+    async findByUsername(id) {
         const user = await this.prisma.users.findUnique({
             where: {
-                username: username,
+                id: id,
             },
         });
         delete user.hash;
         return user;
     }
-    async exchangeCodeForToken(code) {
-        const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
-        const clientSecret = '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';
-        const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
-        try {
-            const response = await axios_1.default.post('https://api.intra.42.fr/oauth/token', {
-                grant_type: 'client_credentials',
-                code,
-                client_id: clientId,
-                client_secret: clientSecret,
-                redirect_uri: redirectUri,
-            });
-            return response.data.access_token;
-        }
-        catch (error) {
-            if (error.response.data.error === 'invalid_grant') {
-                throw new Error('Incorrect authorization grant: The authorization grant could be invalid, expired, revoked, or may not match the redirection URI used in the authorization request.');
-            }
-            throw error;
-        }
-    }
-    async addTwoFASecret(username, secret) {
+    async addTwoFASecret(id, secret) {
         try {
             const updatedUser = await this.prisma.users.update({
-                where: { username },
+                where: { id },
                 data: { twofa_secret: secret },
             });
             if (!updatedUser) {
@@ -110,10 +88,10 @@ let AuthService = class AuthService {
             throw new common_3.InternalServerErrorException('Failed to add 2FA secret');
         }
     }
-    async enableTwoFASecret(username) {
+    async enableTwoFASecret(id) {
         try {
             const updatedUser = await this.prisma.users.update({
-                where: { username },
+                where: { id },
                 data: { twoFactorSecret: true },
             });
             if (!updatedUser) {

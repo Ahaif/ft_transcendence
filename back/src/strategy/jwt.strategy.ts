@@ -14,17 +14,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: false,
       secretOrKey: config.get('JWT_SECRET')
     });
-    console.log("JwtStrategy constructor called.")
+
   }
 
   async validate(payload: any) {
    
   
-    const username = payload.username
+    const id = payload.id
     const twoFA = payload.twoFA_sec
 
     return { 
-      username,
+      id,
       twoFA
     };
   }

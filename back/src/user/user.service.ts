@@ -18,11 +18,11 @@ export class UserService {
         ){}
 
 
-    async updateAvatar(imageUrl : string, username:string)
+    async updateAvatar(imageUrl : string, id:number)
     {
         try {
             const updatedUser = await this.prisma.users.update({
-              where: { username },
+              where: { id },
               data: { avatar: imageUrl },
             });
             if (!updatedUser) {
@@ -34,13 +34,17 @@ export class UserService {
 
     }
 
-    async addDisplayName(displayName:string, username:string):Promise<string>
+    async addDisplayName(displayName:string, id: number):Promise<string>
     {
       try {
         
         const updatedUser = await this.prisma.users.update({
-          where: { username },
-          data: { displayName : displayName},
+          where: { id },
+          data: { 
+            displayName : displayName,
+            status : "connected"
+           
+                },
         });
         if (!updatedUser) {
           return null;

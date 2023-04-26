@@ -20,10 +20,10 @@ let UserService = class UserService {
         this.jwt = jwt;
         this.config = config;
     }
-    async updateAvatar(imageUrl, username) {
+    async updateAvatar(imageUrl, id) {
         try {
             const updatedUser = await this.prisma.users.update({
-                where: { username },
+                where: { id },
                 data: { avatar: imageUrl },
             });
             if (!updatedUser) {
@@ -34,11 +34,14 @@ let UserService = class UserService {
             throw new common_1.InternalServerErrorException('Failed to update avatar');
         }
     }
-    async addDisplayName(displayName, username) {
+    async addDisplayName(displayName, id) {
         try {
             const updatedUser = await this.prisma.users.update({
-                where: { username },
-                data: { displayName: displayName },
+                where: { id },
+                data: {
+                    displayName: displayName,
+                    status: "connected"
+                },
             });
             if (!updatedUser) {
                 return null;

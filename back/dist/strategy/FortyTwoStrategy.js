@@ -13,7 +13,7 @@ exports.FortyTwoStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_42_1 = require("passport-42");
-const auth_service_1 = require("../auth.service");
+const auth_service_1 = require("../auth/auth.service");
 let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStrategy)(passport_42_1.Strategy, '42') {
     constructor(authService) {
         super({
@@ -25,7 +25,7 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
     }
     async validate(accessToken, refreshToken, profile, cb) {
         const user = await this.authService.findOrCreateUser(profile, accessToken);
-        const neWuser = Object.assign(Object.assign({}, user), { displayName: profile.displayName, hash: undefined, access_token: undefined, twofa_secret: undefined });
+        const neWuser = Object.assign(Object.assign({ id: 0 }, user), { displayName: profile.displayName, hash: undefined, access_token: undefined, twofa_secret: undefined });
         cb(null, neWuser);
     }
 };

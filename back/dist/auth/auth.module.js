@@ -12,8 +12,8 @@ const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const strategy_1 = require("./strategy");
-const FortyTwoStrategy_1 = require("./strategy/FortyTwoStrategy");
+const strategy_1 = require("../strategy");
+const FortyTwoStrategy_1 = require("../strategy/FortyTwoStrategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([

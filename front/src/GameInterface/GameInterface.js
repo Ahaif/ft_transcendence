@@ -10,6 +10,7 @@ function GameInterface() {
   const [displayName, setDisplayName] = useState('');
   const [isDisplayNameEntered, setIsDisplayNameEntered] = useState(true);
   const [isLoaded, setIsLoaded] = useState(true);
+  const [onlineStatus, setOnlineStatus] =  useState('Not Connected')
 
 
  
@@ -36,11 +37,13 @@ function GameInterface() {
     };
     axios.get('http://10.11.1.1:3000/user/data', config)
     .then(response => {
-      const {avatar, displayName } = response.data;
+      const {avatar, displayName, status } = response.data;
       if(displayName)
       {
         setDisplayName(displayName)
         setIsDisplayNameEntered(true);
+
+        setOnlineStatus(status)
         setIsLoaded(false)
 
       }
@@ -55,6 +58,7 @@ function GameInterface() {
     })
 
 
+
   }, []);
 
   const handleLogout = () => {
@@ -65,14 +69,13 @@ function GameInterface() {
 
   const handleAvatarUpload = async (event) => {
     event.preventDefault();
-    console.log(event.target.files[0])
     // console.log(event.target.elements.file)
     const fileInput = event.target.files[0];
     if (!fileInput) {
       console.error('File input not found');
       return;
     }
-    // const file = fileInput.files[0];
+    
     const jwtToken = localStorage.getItem('jwt_token');
 
     if (!jwtToken) {
@@ -175,6 +178,9 @@ function GameInterface() {
           </div>
           <div className="display-name">
               {displayName}
+           </div>
+           <div className="online-status">
+              {onlineStatus}
            </div>
           <button className="logout-btn" onClick={handleLogout}>
             Log out
