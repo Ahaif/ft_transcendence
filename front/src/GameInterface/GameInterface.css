@@ -67,7 +67,7 @@
     position: absolute;
     top: 210px;
     left: 150px;
-    display: inline-block;
+    /* display: inline-block; */
     }
   
   .gameInterface .display-name::before {

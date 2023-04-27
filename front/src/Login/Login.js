@@ -12,7 +12,7 @@ const Login = () => {
   const handle42Login = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get('http://10.11.1.1:3000/auth/generate-42-auth-url');
+      const response = await axios.get('http://localhost:3000/auth/generate-42-auth-url');
 
 
       window.location.href = response.data.url;

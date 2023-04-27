@@ -13,15 +13,8 @@ function GameInterface() {
   const [onlineStatus, setOnlineStatus] =  useState('');
 
 
-useEffect(() => {
-  console.log({onlineStatus});
-}, [onlineStatus])
-
- 
   useEffect(() => {
-    console.log("useEffect");
-
-
+   
       const searchParams = new URLSearchParams(window.location.search);
       const token = searchParams.get('access_token');
     
@@ -48,7 +41,7 @@ useEffect(() => {
     
       async function fetch_data() {
         try {
-          const response =  await axios.get('http://10.11.1.1:3000/user/data', config);
+          const response =  await axios.get('http://localhost:3000/user/data', config);
     
           const { avatar, displayName, status } = response.data;
     
@@ -57,6 +50,7 @@ useEffect(() => {
             setDisplayName(displayName);
             setIsDisplayNameEntered(true);
             setIsLoaded(false);
+            change_status("online");
             
            
           } else {
@@ -65,11 +59,6 @@ useEffect(() => {
     
           if (avatar) {
             setAvatarLink(avatar);
-          }
-          if(status === "disconnected")
-          {
-            change_status();
-            console.log("passed")
           }
         } catch (error) {
           console.error(error);
@@ -80,24 +69,7 @@ useEffect(() => {
 
   const handleLogout = async () => {
     
-    const jwtToken = localStorage.getItem('jwt_token');
-    if(!jwtToken)
-    {
-      console.log("jwt_token is not found")
-      return
-    }
-    const config = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-    };
-
-    console.log(jwtToken)
-    const data = {
-      status: 'disconnected'
-    };
-    
-    await axios.put('http://10.11.1.1:3000/api/id/status/change',data, config);
+    change_status("offline")
     navigate('/login');
 
     localStorage.removeItem('access_token');
@@ -132,7 +104,7 @@ useEffect(() => {
 
     try {
       const response = await axios.post(
-        'http://10.11.1.1:3000/user/avatar',
+        'http://localhost:3000/user/avatar',
         formData,
         config
       );
@@ -160,7 +132,7 @@ useEffect(() => {
   
     try {
       const response = await axios.post(
-        'http://10.11.1.1:3000/user/displayName',
+        'http://localhost:3000/user/displayName',
         { displayName },
         config
       );
@@ -178,7 +150,7 @@ useEffect(() => {
   };
 
 
-  const change_status = async()=>{
+  const change_status = async(status)=>{
 
         const jwtToken = localStorage.getItem('jwt_token');
 
@@ -194,10 +166,10 @@ useEffect(() => {
           },
         };
 
-        const data = { status: 'connected' };
+        const data = { status: status };
         // console.log(data)
-        await axios.put('http://10.11.1.1:3000/api/id/status/change', data, config);
-        setOnlineStatus('connected');
+        await axios.put('http://localhost:3000/api/id/status/change', data, config);
+        setOnlineStatus('online');
 
   }
 

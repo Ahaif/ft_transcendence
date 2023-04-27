@@ -34,7 +34,7 @@ const Dashboard = () => {
         'Content-Type': 'multipart/form-data',
       },
     };
-    axios.get('http://10.11.1.1:3000/user/data', config)
+    axios.get('http://localhost:3000/user/data', config)
       .then(response => {
         const { avatar, twoFactorSecret } = response.data;
         if(!twoFactorSecret)
@@ -71,7 +71,7 @@ const Dashboard = () => {
   
     try {
       const response = await axios.post(
-        'http://10.11.1.1:3000/auth/check-2fa',
+        'http://localhost:3000/auth/check-2fa',
         { password },
         config
       );
