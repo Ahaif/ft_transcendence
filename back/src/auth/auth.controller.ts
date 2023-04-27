@@ -26,11 +26,11 @@ export class AuthController {
        const displayName:string = req.user.displayName
        const avatar:string = req.user.avatar
        if (req.user.twoFactorSecret) {
-        res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
+        res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
 
       }
       else{
-        res.redirect(`http://10.11.1.1:3001/Enable2FA?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
+        res.redirect(`http://localhost:3001/Enable2FA?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
       }
     } catch (error) {
     console.error('Error exchanging code for token:', error);
@@ -42,7 +42,7 @@ export class AuthController {
   @Get('generate-42-auth-url')
   async generate42AuthUrl(): Promise<{ url: string }> {
 
-      const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
+      const redirectUri = 'http://localhost:3000/auth/dashboard';
       const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
       const scope = 'public';
       const state = '42oauth';

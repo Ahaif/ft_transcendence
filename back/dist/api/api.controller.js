@@ -28,7 +28,7 @@ let ApiController = class ApiController {
     async addFriend(req, res) {
         try {
             const UserId = req.user.id;
-            const friendId = 9;
+            const friendId = 2;
             const newFriendship = await this.apiService.createFriend(UserId, friendId);
             console.log(newFriendship);
             res.status(200).json({ newFriendship });
@@ -59,7 +59,6 @@ let ApiController = class ApiController {
     }
     async setOnlineStatus(req, res, body) {
         const data = body;
-        console.log(body);
         try {
             const id = req.user.id;
             const user = await this.prisma.users.update({
@@ -70,6 +69,28 @@ let ApiController = class ApiController {
         }
         catch (error) {
             res.status(400).json({ error });
+        }
+    }
+    async listOnlineFriends(req, res) {
+        try {
+            const user = await this.apiService.listFriends("online", req.user.id);
+            console.log("passed");
+            console.log(user);
+            return res.status(200).json(user);
+        }
+        catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+    async listFriendsAll(req, res) {
+        try {
+            const user = await this.apiService.listFriends("all", req.user.id);
+            console.log("passed");
+            console.log(user);
+            return res.status(200).json(user);
+        }
+        catch (error) {
+            return res.status(500).json(error);
         }
     }
 };
@@ -111,6 +132,24 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], ApiController.prototype, "setOnlineStatus", null);
+__decorate([
+    (0, common_1.Get)('/online/friends/list'),
+    (0, common_2.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ApiController.prototype, "listOnlineFriends", null);
+__decorate([
+    (0, common_1.Get)('/all/friends/list'),
+    (0, common_2.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ApiController.prototype, "listFriendsAll", null);
 ApiController = __decorate([
     (0, common_1.Controller)('api'),
     __metadata("design:paramtypes", [api_service_1.ApiService,

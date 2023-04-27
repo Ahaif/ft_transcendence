@@ -19,7 +19,7 @@ let FortyTwoStrategy = class FortyTwoStrategy extends (0, passport_1.PassportStr
         super({
             clientID: 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f',
             clientSecret: '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',
-            callbackURL: 'http://10.11.1.1:3000/auth/dashboard',
+            callbackURL: 'http://localhost:3000/auth/dashboard',
         });
         this.authService = authService;
     }

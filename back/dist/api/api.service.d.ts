@@ -10,4 +10,5 @@ export declare class ApiService {
     createFriend(userId: number, friendId: number): Promise<any>;
     getPendingFriendRequests(userId: number): Promise<Friendship[]>;
     acceptFriendRequest(userId: number, friendshipId: number): Promise<Friendship>;
+    listFriends(check: string, userId: number): Promise<any>;
 }

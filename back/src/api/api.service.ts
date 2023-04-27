@@ -102,4 +102,55 @@ export class ApiService {
             return updatedFriendship;
           }
 
+          async listFriends(check :string, userId:number): Promise<any> {
+            const friends = await this.prisma.friendship.findMany({
+              where: {
+                OR: [
+                  { user1Id: userId },
+                  { user2Id: userId }
+                ],
+                status: 'accepted'
+              },
+              include: {
+                user2: {
+                  select: {
+                    id: true,
+                    username: true,
+                    displayName: true,
+                    status: true
+                  }
+                }
+              }
+            });
+            if(check === "online"){
+              const friendObjects = friends
+              .filter(friendship => friendship.user2.status === 'online')
+              .map(friendship => {
+                const friend = friendship.user2;
+                return {
+                  id: friend.id,
+                  username: friend.username,
+                  displayName: friend.displayName,
+                  status: friend.status
+                }
+                
+              });
+              return friendObjects;
+            }
+
+              const friendObjects = friends
+              .map(friendship => {
+                const friend = friendship.user2;
+                return {
+                  id: friend.id,
+                  username: friend.username,
+                  displayName: friend.displayName,
+                  status: friend.status
+                }
+               
+              });
+              return friendObjects;
+
+          }
+
 }

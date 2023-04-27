@@ -22,14 +22,16 @@ export class ApiController {
         private readonly jwtService: JwtService,
         private prisma: PrismaService,
         ) {}
-
+        
+        //add_friend
         @Post('addFriend')
         @UseGuards(AuthGuard('jwt'))
         async addFriend(@Req() req, @Res() res) {
 
             try {
                 const UserId = req.user.id;
-                const friendId = 9;
+                //should retreive it from req body
+                const friendId = 2;
                 const newFriendship = await this.apiService.createFriend(UserId, friendId);
                 console.log(newFriendship);
                 res.status(200).json({ newFriendship });
@@ -40,6 +42,7 @@ export class ApiController {
         }
 
 
+        //return pending request for user 
         @Get('pendingFriendRequests')
         @UseGuards(AuthGuard('jwt'))
         async getPendingFriendRequests(@Req() req, @Res() res) {
@@ -59,10 +62,10 @@ export class ApiController {
         }
 
 
+        //accept friend
         @Put('acceptFriendRequest/:friendshipId')
         @UseGuards(AuthGuard('jwt'))
         async acceptFriendRequest(@Req() req, @Res() res, @Param('friendshipId') friendshipId: string) {
-        // const userId = req.user.id;
         const  userId: number = req.user.id
         const parsedFriendshipId = parseInt(friendshipId, 10);
         console.log(parsedFriendshipId)
@@ -71,12 +74,11 @@ export class ApiController {
         res.status(200).json({ acceptedRequest });
         }
 
-
+        //change online status
         @Put('id/status/change')
         @UseGuards(AuthGuard('jwt'))
         async setOnlineStatus(@Req() req, @Res() res, @Body() body) {
             const data:string = body
-            console.log(body)
             try {
                 const id = req.user.id
                 const user = await this.prisma.users.update({
@@ -91,6 +93,37 @@ export class ApiController {
             }
             
         }
+
+        //list connected friends
+        @Get('/online/friends/list')
+        @UseGuards(AuthGuard('jwt'))
+        async listOnlineFriends(@Req() req , @Res() res)
+        {
+            try{
+                const user = await this.apiService.listFriends("online", req.user.id)
+                console.log("passed")
+                console.log(user)
+                return res.status(200).json(user);
+            }catch(error){
+                return res.status(500).json(error);
+            }
+        }
+
+        //list all friend
+        @Get('/all/friends/list')
+        @UseGuards(AuthGuard('jwt'))
+        async listFriendsAll(@Req() req , @Res() res)
+        {
+            try{
+                const user = await this.apiService.listFriends("all", req.user.id )
+                console.log("passed")
+                console.log(user)
+                return res.status(200).json(user);
+            }catch(error){
+                return res.status(500).json(error);
+            }
+        }
+
 
         
       

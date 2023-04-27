@@ -32,10 +32,10 @@ let AuthController = class AuthController {
             const displayName = req.user.displayName;
             const avatar = req.user.avatar;
             if (req.user.twoFactorSecret) {
-                res.redirect(`http://10.11.1.1:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
+                res.redirect(`http://localhost:3001/dashboard?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
             else {
-                res.redirect(`http://10.11.1.1:3001/Enable2FA?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
+                res.redirect(`http://localhost:3001/Enable2FA?access_token=${jwt_token}&displayName=${displayName}&avatar=${avatar}`);
             }
         }
         catch (error) {
@@ -44,7 +44,7 @@ let AuthController = class AuthController {
         }
     }
     async generate42AuthUrl() {
-        const redirectUri = 'http://10.11.1.1:3000/auth/dashboard';
+        const redirectUri = 'http://localhost:3000/auth/dashboard';
         const clientId = 'u-s4t2ud-c73b0d60dab9c28bab7af6f2578a6c8c463110dd695b0818c224210eb390eb0f';
         const scope = 'public';
         const state = '42oauth';

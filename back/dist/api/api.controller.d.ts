@@ -10,4 +10,6 @@ export declare class ApiController {
     getPendingFriendRequests(req: any, res: any): Promise<void>;
     acceptFriendRequest(req: any, res: any, friendshipId: string): Promise<void>;
     setOnlineStatus(req: any, res: any, body: any): Promise<void>;
+    listOnlineFriends(req: any, res: any): Promise<any>;
+    listFriendsAll(req: any, res: any): Promise<any>;
 }
