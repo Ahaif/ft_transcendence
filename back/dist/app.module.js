@@ -19,6 +19,8 @@ const user_module_1 = require("./user/user.module");
 const auth_controller_1 = require("./auth/auth.controller");
 const api_controller_1 = require("./api/api.controller");
 const api_module_1 = require("./api/api.module");
+const channels_controller_1 = require("./channels/channels.controller");
+const channels_module_1 = require("./channels/channels.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -29,9 +31,10 @@ AppModule = __decorate([
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             user_module_1.UserModule,
-            api_module_1.ApiModule
+            api_module_1.ApiModule,
+            channels_module_1.ChannelsModule
         ],
-        controllers: [app_controller_1.AppController, user_controller_1.UserController, auth_controller_1.AuthController, api_controller_1.ApiController],
+        controllers: [app_controller_1.AppController, user_controller_1.UserController, auth_controller_1.AuthController, api_controller_1.ApiController, channels_controller_1.ChannelsController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

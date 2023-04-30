@@ -1,4 +1,4 @@
-import { Controller, Get,Post, UseGuards, Req, Body, Res } from '@nestjs/common';
+import { Controller, Get,Post, UseGuards, Req, Body, Res, Param } from '@nestjs/common';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BadRequestException } from '@nestjs/common';
@@ -85,6 +85,57 @@ export class UserController {
     }
   }
 
+
+// display profile friend
+  @Get('display/profile/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async displayProfile(@Req() req, @Res() res, @Param('id') id: string){
+
+      try{
+      const parsedFriendshipId = parseInt(id, 10);
+
+      const userInfo = await this.userService.getPlayerData(parsedFriendshipId);
+      return res.status(200).json(userInfo);
+
+
+    }catch(error){
+      return res.status(500).json(error);
+    }
   }
+  
+  
+
+
+
+  //display my Profile  
+  @Get('display/myprofile')
+  @UseGuards(AuthGuard('jwt'))
+  async displaymyProfile(@Req() req, @Res() res){
+
+      try{
+        const  userId: number = req.user.id
+      
+
+      const userInfo = await this.userService.getPlayerData(userId);
+      return res.status(200).json(userInfo);
+
+
+    }catch(error){
+      return res.status(500).json(error);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+  
+
+
 
   

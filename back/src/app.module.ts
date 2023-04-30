@@ -13,6 +13,8 @@ import { UserModule } from './user/user.module';
 import { AuthController } from './auth/auth.controller';
 import { ApiController } from './api/api.controller';
 import { ApiModule } from './api/api.module';
+import { ChannelsController } from './channels/channels.controller';
+import { ChannelsModule } from './channels/channels.module';
 
 
 
@@ -25,10 +27,11 @@ import { ApiModule } from './api/api.module';
     PrismaModule,
     AuthModule,
     UserModule,
-    ApiModule
+    ApiModule,
+    ChannelsModule
     
   ],
-  controllers: [AppController, UserController, AuthController, ApiController],
+  controllers: [AppController, UserController, AuthController, ApiController, ChannelsController],
   providers: [AppService],
   // exports: [CatsService] to export any service to be use by all the modules declared 
 })

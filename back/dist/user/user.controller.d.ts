@@ -19,6 +19,12 @@ export declare class UserController {
         avatar: string;
         displayName: string;
         status: string;
+        wins: number;
+        losses: number;
+        ladderLevel: number;
+        achievements: string[];
     }>;
     add_displayName(req: any, body: any, res: any): Promise<any>;
+    displayProfile(req: any, res: any, id: string): Promise<any>;
+    displaymyProfile(req: any, res: any): Promise<any>;
 }

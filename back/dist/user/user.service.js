@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
 const config_1 = require("@nestjs/config");
+const console_1 = require("console");
 let UserService = class UserService {
     constructor(prisma, jwt, config) {
         this.prisma = prisma;
@@ -40,7 +41,7 @@ let UserService = class UserService {
                 where: { id },
                 data: {
                     displayName: displayName,
-                    status: "connected"
+                    status: "online"
                 },
             });
             if (!updatedUser) {
@@ -62,6 +63,35 @@ let UserService = class UserService {
             delete user.hash;
         }
         return user;
+    }
+    async getPlayerData(userId) {
+        const user = await this.prisma.users.findUnique({
+            where: { id: userId },
+            include: {
+                matches: {
+                    include: {
+                        player1: { select: { displayName: true } },
+                        player2: { select: { displayName: true } },
+                    },
+                },
+            },
+        });
+        if (!user) {
+            throw (0, console_1.error)("user not found");
+        }
+        const stats = {
+            wins: user.wins,
+            losses: user.losses,
+            ladderLevel: user.ladderLevel,
+            achievements: user.achievements,
+        };
+        const matchHistory = user.matches.map((match) => ({
+            id: match.id,
+            result: match.result,
+            player1: match.player1.displayName,
+            player2: match.player2.displayName,
+        }));
+        return { stats, matchHistory };
     }
 };
 UserService = __decorate([

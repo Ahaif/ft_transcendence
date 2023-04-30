@@ -23,8 +23,24 @@ model Users {
   status          String? @default("")
 
 
+
+  wins            Int     @default(0)
+  losses          Int     @default(0)
+  ladderLevel     Int     @default(0)
+  achievements    String[]
+
+
   friends   Friendship[] @relation("FriendshipUser1")
   friendOf  Friendship[]  @relation("FriendshipUser2")
+
+
+  matches         Match[]  @relation("Player1")
+  matchesAsPlayer2 Match[] @relation("Player2")
+
+
+  channelsOwned    Channels[] @relation("ChannelOwner")
+  channelsAdmin    Channels[] @relation("ChannelAdmin")
+  channelsMember   Channels[] @relation("ChannelMembership")
 
 
   @@map("Users")
@@ -40,4 +56,35 @@ model Friendship {
   user2   Users  @relation("FriendshipUser2", fields: [user2Id], references: [id])
 
   @@map("Friendship")
+}
+
+
+
+model Match {
+  id       Int     @id @default(autoincrement())
+  date     DateTime
+  gameType String
+  winnerId Int
+  loserId  Int
+  result   String? @default("")
+
+  // Add a many-to-many relationship with Users
+  player1  Users   @relation("Player1", fields: [winnerId], references: [id])
+  player2  Users   @relation("Player2", fields: [loserId], references: [id])
+
+  @@map("Matches")
+}
+
+
+model Channels {
+  id              Int       @id @default(autoincrement())
+  name            String    @unique
+  isPublic        Boolean   @default(true)
+  password        String?
+  ownerId         Int
+  owner           Users     @relation("ChannelOwner", fields: [ownerId], references: [id])
+  admins          Users[]   @relation("ChannelAdmin")
+  members         Users[]   @relation("ChannelMembership")
+
+  @@map("Channels")
 }

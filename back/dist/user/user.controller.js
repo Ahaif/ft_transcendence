@@ -61,6 +61,26 @@ let UserController = class UserController {
             res.status(500).send('Error Saving displayName');
         }
     }
+    async displayProfile(req, res, id) {
+        try {
+            const parsedFriendshipId = parseInt(id, 10);
+            const userInfo = await this.userService.getPlayerData(parsedFriendshipId);
+            return res.status(200).json(userInfo);
+        }
+        catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+    async displaymyProfile(req, res) {
+        try {
+            const userId = req.user.id;
+            const userInfo = await this.userService.getPlayerData(userId);
+            return res.status(200).json(userInfo);
+        }
+        catch (error) {
+            return res.status(500).json(error);
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('avatar'),
@@ -99,6 +119,25 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "add_displayName", null);
+__decorate([
+    (0, common_1.Get)('display/profile/:id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __param(2, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "displayProfile", null);
+__decorate([
+    (0, common_1.Get)('display/myprofile'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "displaymyProfile", null);
 UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [user_service_1.UserService,
