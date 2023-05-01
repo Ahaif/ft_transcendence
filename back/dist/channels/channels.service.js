@@ -29,8 +29,15 @@ let ChannelsService = class ChannelsService {
         const channel = await this.prisma.channels.create({
             data: {
                 name: channelName,
-                ownerId: ownerId
-            }
+                ownerId: ownerId,
+                admins: { connect: { id: ownerId } },
+                members: { connect: { id: ownerId } },
+            },
+            include: {
+                owner: true,
+                admins: true,
+                members: true,
+            },
         });
         if (!channel)
             throw (0, console_1.error)("Error creating Channel");
@@ -100,6 +107,54 @@ let ChannelsService = class ChannelsService {
         }
         channel.password = null;
         const updatedChannel = await this.prisma.channels.update({ where: { id: channel.id }, data: channel });
+        return updatedChannel;
+    }
+    async getChannelByIdAndOwner(channelId, ownerId) {
+        const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: { admins: true },
+        });
+        if (!channel || channel.ownerId !== ownerId) {
+            throw new common_2.NotFoundException('Channel not found');
+        }
+        return channel;
+    }
+    async addAdmin(channelId, userId) {
+        const existingUser = await this.prisma.users.findUnique({
+            where: { id: userId },
+            include: {
+                bans: true,
+                mutes: true,
+            },
+        });
+        if (!existingUser) {
+            throw new common_2.NotFoundException('User not found');
+        }
+        if (existingUser.bans.length > 0) {
+            throw new common_4.BadRequestException('User is banned');
+        }
+        if (existingUser.mutes.length > 0) {
+            throw new common_4.BadRequestException('User is muted');
+        }
+        const existingChannel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: { admins: true },
+        });
+        if (!existingChannel) {
+            throw new common_2.NotFoundException('Channel not found');
+        }
+        if (existingChannel.admins.some((admin) => admin.id === userId)) {
+            throw new common_4.BadRequestException('User is already an admin');
+        }
+        const updatedChannel = await this.prisma.channels.update({
+            where: { id: channelId },
+            data: {
+                admins: {
+                    connect: [{ id: userId }],
+                },
+            },
+            include: { admins: true },
+        });
         return updatedChannel;
     }
 };

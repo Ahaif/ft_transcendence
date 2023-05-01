@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file. To implement the ability for administrators of a channel to kick, ban, or mute other users, you can modify the Channels model to add three new relations: kicks, bans, and mutes.
+
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -22,30 +23,27 @@ model Users {
   displayName     String @unique
   status          String? @default("")
 
-
-
   wins            Int     @default(0)
   losses          Int     @default(0)
   ladderLevel     Int     @default(0)
   achievements    String[]
 
-
   friends   Friendship[] @relation("FriendshipUser1")
   friendOf  Friendship[]  @relation("FriendshipUser2")
 
-
   matches         Match[]  @relation("Player1")
   matchesAsPlayer2 Match[] @relation("Player2")
-
 
   channelsOwned    Channels[] @relation("ChannelOwner")
   channelsAdmin    Channels[] @relation("ChannelAdmin")
   channelsMember   Channels[] @relation("ChannelMembership")
 
+  kicks  Channels[] @relation("Kicks")
+  bans   Channels[] @relation("Bans")
+  mutes  Channels[] @relation("Mutes")
 
   @@map("Users")
 }
-
 
 model Friendship {
   id      Int    @id @default(autoincrement())
@@ -57,8 +55,6 @@ model Friendship {
 
   @@map("Friendship")
 }
-
-
 
 model Match {
   id       Int     @id @default(autoincrement())
@@ -75,7 +71,6 @@ model Match {
   @@map("Matches")
 }
 
-
 model Channels {
   id              Int       @id @default(autoincrement())
   name            String    @unique
@@ -85,6 +80,10 @@ model Channels {
   owner           Users     @relation("ChannelOwner", fields: [ownerId], references: [id])
   admins          Users[]   @relation("ChannelAdmin")
   members         Users[]   @relation("ChannelMembership")
+
+  kicks  Users[] @relation("Kicks")
+  bans   Users[] @relation("Bans")
+  mutes  Users[] @relation("Mutes")
 
   @@map("Channels")
 }

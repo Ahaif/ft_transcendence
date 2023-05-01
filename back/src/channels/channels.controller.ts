@@ -1,7 +1,8 @@
-import { Controller, UseGuards, Post, Req, Res, Body, Put } from '@nestjs/common';
+import { Controller, UseGuards, Post, Req, Res, Body, Put, Param } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
+import { ParseIntPipe } from '@nestjs/common';
 
 
 
@@ -107,4 +108,38 @@ export class ChannelsController {
             res.status(400).json({ message: error.message });
         }
     }
+
+
+
+    //set user as admin
+    @Put(':channelId/addAdmin/:userId')
+    @UseGuards(AuthGuard('jwt'))
+    async addAdmin(
+        @Param('channelId', ParseIntPipe) channelId: number,
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res
+      ) {
+        try {
+            const ownerId: number = req.user.id;
+            const channel = await this.channelsService.getChannelByIdAndOwner(
+              channelId,
+              ownerId
+            );
+            if (!channel) {
+              return res.status(404).json({ message: 'Channel not found' });
+            }
+            if (channel.ownerId !== ownerId) {
+              return res.status(403).json({ message: 'You are not the channel owner' });
+            }
+            console.log(channel)
+            const updatedChannel = await this.channelsService.addAdmin(channelId, userId);
+            return res.status(200).json({ message: 'Admin added successfully', updatedChannel });
+          } catch (error) {
+            return res.status(400).json({ message: error.message });
+          }
+
+      }
+
+
 }

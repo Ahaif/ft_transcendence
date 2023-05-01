@@ -23,17 +23,24 @@ export class ChannelsService {
 
 
         async createChannel(channelName: string, ownerId: number){
-
-            const channel = await this.prisma.channels.create({
-                data: {
-                  name: channelName,
-                  ownerId: ownerId
-                }
-              });
-              if(!channel)
-                throw error ("Error creating Channel")
-              return channel;
-
+          const channel = await this.prisma.channels.create({
+            data: {
+              name: channelName,
+              ownerId: ownerId,
+              admins: { connect: { id: ownerId } },
+              members: { connect: { id: ownerId } },
+            },
+            include: {
+              owner: true,
+              admins: true,
+              members: true,
+            },
+          });
+          
+          if(!channel)
+            throw error ("Error creating Channel");
+        
+          return channel;
         }
 
         async privateChannel(channelName: string, ownerId: number): Promise<Channels> {
@@ -121,10 +128,71 @@ export class ChannelsService {
           }
 
 
+          async getChannelByIdAndOwner(channelId: number, ownerId: number) {
+            const channel = await this.prisma.channels.findUnique({
+              where: { id: channelId },
+              include: { admins: true },
+            });
+          
+            if (!channel || channel.ownerId !== ownerId) {
+              throw new NotFoundException('Channel not found');
+            }
+          
+            return channel;
+          }
+        
+          async addAdmin(channelId: number, userId: number) {
+            const existingUser = await this.prisma.users.findUnique({
+              where: { id: userId },
+              include: {
+                bans: true,
+                mutes: true,
+              },
+            });
+            
+            if (!existingUser) {
+              throw new NotFoundException('User not found');
+            }
+            
+            if (existingUser.bans.length > 0) {
+              throw new BadRequestException('User is banned');
+            }
+            
+            if (existingUser.mutes.length > 0) {
+              throw new BadRequestException('User is muted');
+            }
+            
+            const existingChannel = await this.prisma.channels.findUnique({
+              where: { id: channelId },
+              include: { admins: true },
+            });
+            
+            if (!existingChannel) {
+              throw new NotFoundException('Channel not found');
+            }
+            
+            if (existingChannel.admins.some((admin) => admin.id === userId)) {
+              throw new BadRequestException('User is already an admin');
+            }
+            
+            const updatedChannel = await this.prisma.channels.update({
+              where: { id: channelId },
+              data: {
+                admins: {
+                  connect: [{ id: userId }],
+                },
+              },
+              include: { admins: true },
+            });
+            
+            return updatedChannel;
+        }
+      }
+
+
 
 
 
 
 
     
-}
