@@ -102,6 +102,50 @@ let ChannelsController = class ChannelsController {
             return res.status(400).json({ message: error.message });
         }
     }
+    async joinChannel(channelId, req, res) {
+        try {
+            const userId = req.user.id;
+            await this.channelsService.joinChannel(channelId, userId);
+            return res.status(200).json({ message: 'Joined the channel successfully' });
+        }
+        catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+    async banUser(channelId, userId, req, res) {
+        try {
+            const ownerId = req.user.id;
+            const channel = await this.channelsService.getChannelByIdAndOwner(channelId, ownerId);
+            if (!channel) {
+                return res.status(404).json({ message: 'Channel not found' });
+            }
+            if (channel.ownerId !== ownerId) {
+                return res.status(403).json({ message: 'You are not the channel owner' });
+            }
+            await this.channelsService.banUser(channelId, userId);
+            return res.status(200).json({ message: 'User banned successfully' });
+        }
+        catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+    async kickUser(channelId, userId, req, res) {
+        try {
+            const ownerId = req.user.id;
+            const channel = await this.channelsService.getChannelByIdAndOwner(channelId, ownerId);
+            if (!channel) {
+                return res.status(404).json({ message: 'Channel not found' });
+            }
+            if (channel.ownerId !== ownerId) {
+                return res.status(403).json({ message: 'You are not the channel owner' });
+            }
+            await this.channelsService.kickUser(channelId, userId, ownerId);
+            return res.status(200).json({ message: 'User kicked successfully' });
+        }
+        catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('create'),
@@ -164,6 +208,38 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "addAdmin", null);
+__decorate([
+    (0, common_1.Put)(':channelId/join'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Param)('channelId', common_2.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChannelsController.prototype, "joinChannel", null);
+__decorate([
+    (0, common_1.Put)(':channelId/banUser/:userId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Param)('channelId', common_2.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('userId', common_2.ParseIntPipe)),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChannelsController.prototype, "banUser", null);
+__decorate([
+    (0, common_1.Put)(':channelId/kickUser/:userId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Param)('channelId', common_2.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('userId', common_2.ParseIntPipe)),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChannelsController.prototype, "kickUser", null);
 ChannelsController = __decorate([
     (0, common_1.Controller)('channels'),
     __metadata("design:paramtypes", [channels_service_1.ChannelsService,

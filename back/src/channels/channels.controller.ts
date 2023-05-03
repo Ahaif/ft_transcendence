@@ -141,5 +141,91 @@ export class ChannelsController {
 
       }
 
+         //join channel
+        @Put(':channelId/join')
+        @UseGuards(AuthGuard('jwt'))
+        async joinChannel(
+        @Param('channelId', ParseIntPipe) channelId: number,
+        @Req() req,
+        @Res() res,
+        ) {
+        try {
+            const userId: number = req.user.id;
+
+            await this.channelsService.joinChannel(channelId, userId);
+
+            return res.status(200).json({ message: 'Joined the channel successfully' });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+        }
+
+        //bane user from a channel
+        @Put(':channelId/banUser/:userId')
+        @UseGuards(AuthGuard('jwt'))
+        async banUser(
+        @Param('channelId', ParseIntPipe) channelId: number,
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res,
+        ) {
+        try {
+            const ownerId: number = req.user.id;
+            const channel = await this.channelsService.getChannelByIdAndOwner(
+            channelId,
+            ownerId,
+            );
+
+            if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+            }
+
+            if (channel.ownerId !== ownerId) {
+            return res.status(403).json({ message: 'You are not the channel owner' });
+            }
+
+            await this.channelsService.banUser(channelId, userId);
+
+            return res.status(200).json({ message: 'User banned successfully' });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+        }
+
+
+
+        //kick a user from a channel
+        @Put(':channelId/kickUser/:userId')
+        @UseGuards(AuthGuard('jwt'))
+        async kickUser(
+        @Param('channelId', ParseIntPipe) channelId: number,
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res,
+        ) {
+            try {
+                const ownerId: number = req.user.id;
+                const channel = await this.channelsService.getChannelByIdAndOwner(
+                channelId,
+                ownerId,
+                );
+
+                if (!channel) {
+                return res.status(404).json({ message: 'Channel not found' });
+                }
+
+                if (channel.ownerId !== ownerId) {
+                return res.status(403).json({ message: 'You are not the channel owner' });
+                }
+
+                await this.channelsService.kickUser(channelId, userId, ownerId);
+
+                return res.status(200).json({ message: 'User kicked successfully' });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+        }
+
+
 
 }

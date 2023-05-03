@@ -187,6 +187,157 @@ export class ChannelsService {
             
             return updatedChannel;
         }
+
+
+        async joinChannel(channelId: number, userId: number) {
+          const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+              members: true,
+              bans: true,
+              kicks: true,
+            },
+          });
+        
+          if (!channel) {
+            throw new NotFoundException('Channel not found');
+          }
+        
+          const userBlocked = channel.bans.some(
+            (blockedUser) => blockedUser.id === userId
+          );
+          const userBanned = channel.kicks.some(
+            (bannedUser) => bannedUser.id === userId
+          );
+        
+          if (userBlocked) {
+            throw new BadRequestException('User is banned from the channel');
+          }
+        
+          if (userBanned) {
+            throw new BadRequestException('User is kicked from the channel');
+          }
+        
+          const userAlreadyMember = channel.members.some(
+            (member) => member.id === userId
+          );
+        
+          if (userAlreadyMember) {
+            throw new BadRequestException('User is already a member of the channel');
+          }
+
+        
+          const updatedChannel = await this.prisma.channels.update({
+            where: { id: channelId },
+            data: {
+              members: {
+                connect: { id: userId },
+              },
+            },
+            include: { members: true },
+          });
+        
+          return updatedChannel;
+        }
+
+
+
+        async banUser(channelId: number, userId: number): Promise<void> {
+          const existingChannel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+              members: true,
+              admins: true,
+              bans: true,
+            },
+          });
+        
+          if (!existingChannel) {
+            throw new NotFoundException('Channel not found');
+          }
+        
+          const isAdmin = existingChannel.admins.some((admin) => admin.id === userId);
+          const isMember = existingChannel.members.some((member) => member.id === userId);
+          const isBanned = existingChannel.bans.some((ban) => ban.id === userId);
+        
+          if (!isAdmin && !isMember) {
+            throw new BadRequestException('User is not a member or admin of this channel');
+          }
+        
+          if (isBanned) {
+            throw new BadRequestException('User is already banned from this channel');
+          }
+        
+          await this.prisma.channels.update({
+            where: { id: channelId },
+            data: {
+              bans: {
+                connect: { id: userId },
+              },
+              members: {
+                disconnect: { id: userId },
+              },
+            },
+          });
+        }
+        
+
+        async kickUser(channelId: number, userId: number, requesterId: number): Promise<void> {
+          const existingChannel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+              members: true,
+              admins: true,
+              owner: true,
+            },
+          });
+        
+          if (!existingChannel) {
+            throw new NotFoundException('Channel not found');
+          }
+        
+          const isAdmin = existingChannel.admins.some((admin) => admin.id === requesterId);
+          if (!isAdmin) {
+            throw new UnauthorizedException('Only admins can kick users from this channel');
+          }
+        
+          const isMember = existingChannel.members.some((member) => member.id === userId);
+          if (!isMember) {
+            throw new BadRequestException('User is not a member of this channel');
+          }
+        
+          const isOwner = existingChannel.owner.id === userId;
+          if (isOwner) {
+            throw new BadRequestException('You cannot kick the owner of this channel');
+          }
+        
+          await this.prisma.channels.update({
+            where: { id: channelId },
+            data: {
+              members: {
+                disconnect: { id: userId },
+              },
+            },
+          });
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
 
 

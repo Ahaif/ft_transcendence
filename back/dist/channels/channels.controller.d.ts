@@ -10,4 +10,7 @@ export declare class ChannelsController {
     changeChannelPassword(req: any, res: any, body: any): Promise<void>;
     removePassword(req: any, res: any, body: any): Promise<void>;
     addAdmin(channelId: number, userId: number, req: any, res: any): Promise<any>;
+    joinChannel(channelId: number, req: any, res: any): Promise<any>;
+    banUser(channelId: number, userId: number, req: any, res: any): Promise<any>;
+    kickUser(channelId: number, userId: number, req: any, res: any): Promise<any>;
 }

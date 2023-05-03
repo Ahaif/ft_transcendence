@@ -22,4 +22,9 @@ export declare class ChannelsService {
     addAdmin(channelId: number, userId: number): Promise<Channels & {
         admins: import(".prisma/client").Users[];
     }>;
+    joinChannel(channelId: number, userId: number): Promise<Channels & {
+        members: import(".prisma/client").Users[];
+    }>;
+    banUser(channelId: number, userId: number): Promise<void>;
+    kickUser(channelId: number, userId: number, requesterId: number): Promise<void>;
 }
