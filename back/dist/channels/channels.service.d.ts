@@ -29,4 +29,5 @@ export declare class ChannelsService {
     }>;
     banUser(channelId: number, userId: number): Promise<void>;
     kickUser(channelId: number, userId: number, requesterId: number): Promise<void>;
+    muteUser(channelId: number, userId: number, muteDurationInMinutes: number): Promise<void>;
 }

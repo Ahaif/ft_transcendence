@@ -151,24 +151,7 @@ let ChannelsController = class ChannelsController {
     async muteUser(channelId, userId, req, res, body) {
         try {
             const requesterId = req.user.id;
-            const channel = await this.channelsService.getChannelById(channelId);
-            console.log(channel);
-            if (!channel) {
-                return res.status(404).json({ message: 'Channel not found' });
-            }
-            const isAdmin = this.channelsService.isUserAdmin(requesterId, channelId);
-            if (!isAdmin) {
-                return res.status(403).json({ message: 'You are not authorized to mute users' });
-            }
-            const userToMute = await this.userService.getUserById(userId);
-            if (!userToMute) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            if (channel.ownerId === userId) {
-                return res.status(403).json({ message: 'You cannot mute the channel owner' });
-            }
-            const muteEndTime = new Date(Date.now() + body * 60000);
-            await this.userService.muteUser(userId, muteEndTime, requesterId);
+            await this.channelsService.muteUser(channelId, requesterId, 60);
             return res.status(200).json({ message: 'User muted successfully' });
         }
         catch (error) {

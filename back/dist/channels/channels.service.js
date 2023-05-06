@@ -286,6 +286,40 @@ let ChannelsService = class ChannelsService {
             },
         });
     }
+    async muteUser(channelId, userId, muteDurationInMinutes) {
+        const existingChannel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+                admins: true,
+                members: true,
+                mutedUsers: true,
+            },
+        });
+        if (!existingChannel) {
+            throw new common_2.NotFoundException('Channel not found');
+        }
+        const isAdmin = existingChannel.admins.some((admin) => admin.id === userId);
+        const isMember = existingChannel.members.some((member) => member.id === userId);
+        const isMuted = existingChannel.mutedUsers.some((mutedUser) => mutedUser.userId === userId);
+        if (!isAdmin && !isMember) {
+            throw new common_4.BadRequestException('User is not a member or admin of this channel');
+        }
+        if (isMuted) {
+            throw new common_4.BadRequestException('User is already muted in this channel');
+        }
+        const muteEndTime = new Date(Date.now() + muteDurationInMinutes * 60000);
+        await this.prisma.users.update({
+            where: { id: userId },
+            data: {
+                mutes: {
+                    create: {
+                        channel: { connect: { id: channelId } },
+                        muteEndTime,
+                    },
+                },
+            },
+        });
+    }
 };
 ChannelsService = __decorate([
     (0, common_1.Injectable)(),
