@@ -35,6 +35,13 @@ let UserService = class UserService {
             throw new common_1.InternalServerErrorException('Failed to update avatar');
         }
     }
+    async getUserById(userId) {
+        const user = this.prisma.users.findUnique({ where: { id: userId } });
+        if (user) {
+            return true;
+        }
+        return false;
+    }
     async addDisplayName(displayName, id) {
         try {
             const updatedUser = await this.prisma.users.update({

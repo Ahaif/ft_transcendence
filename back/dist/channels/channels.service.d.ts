@@ -7,10 +7,12 @@ export declare class ChannelsService {
     private jwt;
     private config;
     constructor(prisma: PrismaService, jwt: JwtService, config: ConfigService);
+    getChannelById(channelId: number): Promise<Channels | null>;
+    isUserAdmin(userId: number, channelId: number): Promise<boolean>;
     createChannel(channelName: string, ownerId: number): Promise<Channels & {
-        owner: import(".prisma/client").Users;
-        admins: import(".prisma/client").Users[];
         members: import(".prisma/client").Users[];
+        admins: import(".prisma/client").Users[];
+        owner: import(".prisma/client").Users;
     }>;
     privateChannel(channelName: string, ownerId: number): Promise<Channels>;
     setChannelPassword(channelName: string, password: string, userId: number): Promise<Channels>;

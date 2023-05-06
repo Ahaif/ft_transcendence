@@ -14,13 +14,14 @@ const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const auth_service_1 = require("../auth/auth.service");
 const strategy_1 = require("../strategy");
+const user_service_1 = require("../user/user.service");
 let ChannelsModule = class ChannelsModule {
 };
 ChannelsModule = __decorate([
     (0, common_1.Module)({
         imports: [jwt_1.JwtModule.register({}), config_1.ConfigModule],
         controllers: [channels_controller_1.ChannelsController],
-        providers: [channels_service_1.ChannelsService, auth_service_1.AuthService, strategy_1.JwtStrategy],
+        providers: [channels_service_1.ChannelsService, auth_service_1.AuthService, strategy_1.JwtStrategy, user_service_1.UserService],
         exports: [channels_service_1.ChannelsService],
     })
 ], ChannelsModule);

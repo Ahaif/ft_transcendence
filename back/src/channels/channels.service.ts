@@ -21,6 +21,45 @@ export class ChannelsService {
         ){}
 
 
+        async getChannelById(channelId : number): Promise<Channels| null>{
+
+          const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+              members: true,
+              bans: true,
+              kicks: true,
+              admins: true,
+            },
+          });
+
+          return channel;
+        }
+
+        async isUserAdmin(userId: number, channelId: number):Promise<boolean>{
+
+          const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+              members: true,
+              bans: true,
+              kicks: true,
+              admins: true,
+            },
+          });
+          const isAdmin = channel.admins.some((admin) => admin.id === userId);
+          if(isAdmin)
+          {
+            return true;
+          }
+          return false;
+        }
+
+        
+
+      
+
+
 
         async createChannel(channelName: string, ownerId: number){
           const channel = await this.prisma.channels.create({
@@ -127,7 +166,7 @@ export class ChannelsService {
             return updatedChannel;
           }
 
-
+          //get channels owned
           async getChannelByIdAndOwner(channelId: number, ownerId: number) {
             const channel = await this.prisma.channels.findUnique({
               where: { id: channelId },

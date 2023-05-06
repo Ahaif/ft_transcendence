@@ -18,9 +18,11 @@ const channels_service_1 = require("./channels.service");
 const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const common_2 = require("@nestjs/common");
+const user_service_1 = require("../user/user.service");
 let ChannelsController = class ChannelsController {
-    constructor(channelsService, jwtService) {
+    constructor(channelsService, userService, jwtService) {
         this.channelsService = channelsService;
+        this.userService = userService;
         this.jwtService = jwtService;
     }
     async createChannel(req, res, body) {
@@ -146,6 +148,33 @@ let ChannelsController = class ChannelsController {
             return res.status(400).json({ message: error.message });
         }
     }
+    async muteUser(channelId, userId, req, res, body) {
+        try {
+            const requesterId = req.user.id;
+            const channel = await this.channelsService.getChannelById(channelId);
+            console.log(channel);
+            if (!channel) {
+                return res.status(404).json({ message: 'Channel not found' });
+            }
+            const isAdmin = this.channelsService.isUserAdmin(requesterId, channelId);
+            if (!isAdmin) {
+                return res.status(403).json({ message: 'You are not authorized to mute users' });
+            }
+            const userToMute = await this.userService.getUserById(userId);
+            if (!userToMute) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            if (channel.ownerId === userId) {
+                return res.status(403).json({ message: 'You cannot mute the channel owner' });
+            }
+            const muteEndTime = new Date(Date.now() + body * 60000);
+            await this.userService.muteUser(userId, muteEndTime, requesterId);
+            return res.status(200).json({ message: 'User muted successfully' });
+        }
+        catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('create'),
@@ -240,9 +269,22 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], ChannelsController.prototype, "kickUser", null);
+__decorate([
+    (0, common_1.Put)(':channelId/muteUser/:userId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Param)('channelId', common_2.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('userId', common_2.ParseIntPipe)),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
+    __param(4, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChannelsController.prototype, "muteUser", null);
 ChannelsController = __decorate([
     (0, common_1.Controller)('channels'),
     __metadata("design:paramtypes", [channels_service_1.ChannelsService,
+        user_service_1.UserService,
         jwt_1.JwtService])
 ], ChannelsController);
 exports.ChannelsController = ChannelsController;

@@ -3,6 +3,7 @@ import { ChannelsService } from './channels.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { ParseIntPipe } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
 
 
 
@@ -13,6 +14,7 @@ export class ChannelsController {
 
     constructor(
         private readonly channelsService: ChannelsService,
+        private readonly userService: UserService,
         private readonly jwtService: JwtService,
         ) {}
 
@@ -225,6 +227,57 @@ export class ChannelsController {
             return res.status(400).json({ message: error.message });
         }
         }
+
+        //mute user for limited time from a channel 
+
+        @Put(':channelId/muteUser/:userId')
+        @UseGuards(AuthGuard('jwt'))
+        async muteUser(
+        @Param('channelId', ParseIntPipe) channelId: number,
+        @Param('userId', ParseIntPipe) userId: number,
+        @Req() req,
+        @Res() res,
+        @Body() body
+        ) {
+        try {
+            const requesterId: number = req.user.id;
+            const channel = await this.channelsService.getChannelById(channelId);
+            console.log(channel)
+
+            if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+            }
+
+         
+            const isAdmin = this.channelsService.isUserAdmin(requesterId, channelId)
+            if (!isAdmin) {
+            return res.status(403).json({ message: 'You are not authorized to mute users' });
+            }
+
+            const userToMute = await this.userService.getUserById(userId);
+            if (!userToMute) {
+            return res.status(404).json({ message: 'User not found' });
+            }
+
+            if (channel.ownerId === userId) {
+            return res.status(403).json({ message: 'You cannot mute the channel owner' });
+            }
+
+            // // Implement your logic to mute the user for a limited time
+            // // For example, update the user's mute status with a mute end time
+
+            const muteEndTime = new Date(Date.now() + body * 60000);
+            await this.userService.muteUser(userId, muteEndTime, requesterId);
+
+            return res.status(200).json({ message: 'User muted successfully' });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+        }
+
+   
+        
+
 
 
 

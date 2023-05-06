@@ -5,12 +5,13 @@ import { JwtModule} from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtStrategy } from 'src/strategy';
+import { UserService } from 'src/user/user.service';
 
 
 @Module({
   imports: [JwtModule.register({}), ConfigModule],
   controllers: [ChannelsController],
-  providers: [ChannelsService, AuthService, JwtStrategy],
+  providers: [ChannelsService, AuthService, JwtStrategy, UserService],
   exports: [ChannelsService],
 
 })

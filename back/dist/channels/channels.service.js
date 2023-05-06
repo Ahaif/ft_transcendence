@@ -25,6 +25,34 @@ let ChannelsService = class ChannelsService {
         this.jwt = jwt;
         this.config = config;
     }
+    async getChannelById(channelId) {
+        const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+                members: true,
+                bans: true,
+                kicks: true,
+                admins: true,
+            },
+        });
+        return channel;
+    }
+    async isUserAdmin(userId, channelId) {
+        const channel = await this.prisma.channels.findUnique({
+            where: { id: channelId },
+            include: {
+                members: true,
+                bans: true,
+                kicks: true,
+                admins: true,
+            },
+        });
+        const isAdmin = channel.admins.some((admin) => admin.id === userId);
+        if (isAdmin) {
+            return true;
+        }
+        return false;
+    }
     async createChannel(channelName, ownerId) {
         const channel = await this.prisma.channels.create({
             data: {

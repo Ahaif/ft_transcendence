@@ -35,6 +35,16 @@ export class UserService {
 
     }
 
+    async getUserById(userId:number):Promise<boolean>{
+
+      const user = this.prisma.users.findUnique({where:{id : userId}})
+      if(user)
+      {
+        return true;
+      }
+      return false;
+    }
+
     async addDisplayName(displayName:string, id: number):Promise<string>
     {
       try {
