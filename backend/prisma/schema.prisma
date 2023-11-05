@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  username          String    @unique
+  intraName         String    @unique
+  coalition         String
+  clCoverUrl        String
+  clImageUrl        String
+  clColor           String
+  accessToken       String    @unique
+  refreshToken      String    @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  level             Int       @default(0)
+  avatar            String    @default("https://i.imgur.com/ClHeyZW.png")
+  otpSecret         String?
+  otpEnabled        Boolean   @default(false)
+  userFriends       Friends[] @relation(name: "users")
+  friendUserFriends Friends[] @relation(name: "friend_users")
+  messages          Message[] @relation(name: "users")
+  friendMessages    Message[] @relation(name: "friend_users")
+  chatGroups        ChatGroup[] @relation(name: "users")
+  chatMessages      ChatMessage[] @relation(name: "users")
+
+
+  blockedBy         BlockedUser[] @relation("BlockedUser")
+  blocking          BlockedUser[] @relation("BlockingUser")
+  wins             Int       @default(0)
+  losses           Int       @default(0)
+  draws            Int       @default(0)
+  games            Game[]    @relation(name: "users")
+  opponentGames    Game[]    @relation(name: "opponent")
+}
+
+model Friends {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  friendUserId String
+  Users        User     @relation(name: "users", fields: [userId], references: [intraName])
+  FriendUsers  User     @relation(name: "friend_users", fields: [friendUserId], references: [intraName])
+  status       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, friendUserId])
+}
+
+model Message {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  friendUserId String
+  Users        User     @relation(name: "users", fields: [userId], references: [intraName])
+  FriendUsers  User     @relation(name: "friend_users", fields: [friendUserId], references: [intraName])
+  message      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ChatGroup {
+    groupName String @id
+    ownerId   String
+    users     User[] @relation(name: "users")
+    admin     String[]
+    banned    String[]
+    muted     String[]
+    password  String? @default("")
+    isPrivate Boolean? @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    chatMessages ChatMessage[] @relation(name: "chat_groups")
+}
+
+model Game {
+    id        Int      @id @default(autoincrement())
+    username  String
+    opponentId String
+    winner    String
+    loser   String
+    score     String
+    Users     User     @relation(name: "users", fields: [username], references: [username])
+    Opponent  User     @relation(name: "opponent", fields: [opponentId], references: [username])
+}
+
+model ChatMessage {
+    id        Int      @id @default(autoincrement())
+    username String
+    groupName String
+    Users     User     @relation(name: "users", fields: [username], references: [username])
+    ChatGroups ChatGroup @relation(name: "chat_groups", fields: [groupName], references: [groupName])
+    message   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model BlockedUser {
+  id                 Int      @id @default(autoincrement())
+  blockingUserId     String
+  blockedUserId      String
+  blockingUser       User     @relation("BlockingUser", fields: [blockingUserId], references: [intraName])
+  blockedUser        User     @relation("BlockedUser", fields: [blockedUserId], references: [intraName])
+
+  @@unique([blockingUserId, blockedUserId])
+}
+
+
+
+
+
+

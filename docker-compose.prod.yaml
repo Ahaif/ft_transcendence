@@ -1,0 +1,50 @@
+version: '3.3'
+
+
+networks:
+  p0ng:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:13.5
+    container_name: prisma_db
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - p0ng
+    
+
+  pong_backend:
+    build: backend/
+    container_name: pong_backend
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - p0ng
+
+  pong_frontend:
+    build: frontend/
+    container_name: pong_frontend
+    restart: always
+    networks:
+      - p0ng
+
+  proxy:
+    build: proxy/
+    container_name: proxy
+    restart: always
+    ports:
+      - 1337:80
+    depends_on:
+      - pong_backend
+      - pong_frontend
+    networks:
+      - p0ng
+      
+
+
+
+
